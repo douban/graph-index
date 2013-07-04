@@ -1,34 +1,24 @@
-body {
-}
-
-img.graph {
-    margin: 5px;
-    border: none;
-}
-
-#container {
-    float: left;
-    width: 100%;
+* {
     background-color: black;
 }
 
-#container h1 {
-    text-align: center;
+#search-box {
+    background-color: white;
+    color: black;
+    margin-top: 2px;
 }
 
-#container form {
-    text-align: center;
+#container {
+    margin-top: 60px;
 }
 
-#container input {
-    width: 96%;
+#container img {
+    margin: 5px;
+    border: none;
 }
 
 div.graph-row {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-}
-
-div.graph {
 }

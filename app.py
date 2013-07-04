@@ -28,6 +28,8 @@ def render_page(body, **kwargs):
 
 @route('/', method = 'GET')
 @route('/', method = 'POST')
+@route('/index', method = 'GET')
+@route('/index', method = 'POST')
 def index():
     if request.method == 'POST':
         search = request.forms.get('search', '')
@@ -42,7 +44,7 @@ def regex():
     search = request.query.get('search', '')
     matched_metrics = find_metrics(search)
     body = template('templates/graph', **locals())
-    return render_page(body)
+    return render_page(body, search = search)
 
 
 @route('<path:re:/static/css/.*css>')
