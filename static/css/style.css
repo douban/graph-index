@@ -1,53 +1,24 @@
 body {
-    padding-bottom: 0px;
+    background-color: black;
 }
 
-body h2 {
-    text-align: center;
-}
-
-#usage {
-    text-align: center;
-}
-
-#usage h1 {
-    font-weight: bold;
-    text-align: center;
-    text-transform: uppercase;
-}
-
-#data {
-    width: 100%;
-    text-align: center;
-    color: white;
-}
-
-#data input {
-    width: 95%;
-    background-color: #ccc;
-    color: black;
+img.graph {
+    margin: 20px;
+    border: none;
 }
 
 #container {
-    width: 96%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#names {
-    width: 85%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#names li {
     float: left;
     margin-left: 20px;
 }
 
-#forkme {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
+#container form {
+    float: left;
 }
 
+#container input {
+    float: left;
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;;
+}

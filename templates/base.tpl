@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>Graph Index</title>
+    <!--
+    -->
     <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
     <script src="/static/js/jquery.min.js"></script>
   </head>
 
