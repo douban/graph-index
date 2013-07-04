@@ -2,13 +2,17 @@
 
 import re
 import json
+import urllib2
 import logging
 from urllib import urlencode
 from bottle import route, run, template, static_file, request, redirect
 
+import config
+
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
-metrics = json.loads(open('metrics.json').read())
+metrics = json.loads(urllib2.urlopen(config.graphite_url + '/metrics/index.json').read())
+
 
 def find_metrics(search):
     global metrics
@@ -22,9 +26,10 @@ def find_metrics(search):
             matched_metrics.append(m)
     return matched_metrics
 
+
+
 def render_page(body, **kwargs):
     return str(template('templates/base', body = body, **kwargs))
-
 
 @route('/', method = 'GET')
 @route('/', method = 'POST')
@@ -38,14 +43,12 @@ def index():
     body = template('templates/index')
     return render_page(body)
 
-
 @route('/regex/', method = 'GET')
 def regex():
     search = request.query.get('search', '')
     matched_metrics = find_metrics(search)
     body = template('templates/graph', **locals())
     return render_page(body, search = search)
-
 
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
