@@ -1,2 +1,2 @@
 # Graph Index
-index of graphite
+index of diamond
