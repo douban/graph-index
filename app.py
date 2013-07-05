@@ -6,7 +6,7 @@ import urllib2
 import logging
 from urllib import urlencode
 from collections import defaultdict
-from bottle import route, run, template, static_file, request, redirect
+from bottle import route, run, template, static_file, request, redirect, default_app
 
 import config
 
