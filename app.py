@@ -17,6 +17,8 @@ diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
 #metrics = json.loads(urllib2.urlopen(config.graphite_url + '/metrics/index.json').read())
 metrics = json.loads(open('metrics.json').read())
 
+diamond = None
+
 
 def find_metrics(search):
     global metrics
@@ -29,6 +31,15 @@ def find_metrics(search):
         if re_obj.search(m):
             matched_metrics.append(m)
     return matched_metrics
+
+def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
+    global diamond
+    data = {}
+    re_obj = re.compile(server_regex)
+    for s in diamond.keys():
+        if re_obj.match(s):
+            data[s] = diamond[s][plugin]
+    return data
 
 def get_diamond():
     global metrics
@@ -44,8 +55,8 @@ def get_diamond():
             diamond[d['server']][d['plugin']].append(m)
     return diamond
 
-
 diamond = get_diamond()
+
 
 
 def render_page(body, **kwargs):
@@ -86,8 +97,13 @@ def metric(metric_name = ''):
 @route('/regex/', method = 'GET')
 def regex():
     search = request.query.get('search', '')
-    matched_metrics = find_metrics(search)
-    body = template('templates/graph', **locals())
+    if ':' in search:
+        plugin, server_regex = search.strip().split(':')
+        data = find_metrics_of_plugin_by_server_regex(plugin, server_regex)
+        body = template('templates/plugin-regex', **locals())
+    else:
+        matched_metrics = find_metrics(search)
+        body = template('templates/graph', **locals())
     return render_page(body, search = search)
 
 @route('<path:re:/static/css/.*css>')
