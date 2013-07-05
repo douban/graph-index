@@ -1,13 +1,15 @@
-%setdefault('matched_metrics', None)
 %import config
-% if matched_metrics:
-% for m in matched_metrics:
+% if m:
 <div class = 'graph-row'>
     <div class = 'graph'>
-        <h4><a href = '/metric/{{m}}'>{{m}}</a></h4>
         <img class = 'graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&&title={{m}} - day' />
         <img class = 'graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&from=-7d&title={{m}} - week' />
     </div>
 </div>
-% end
+<div class = 'graph-row'>
+    <div class = 'graph'>
+        <img class = 'graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&from=-30d&title={{m}} - month' />
+        <img class = 'graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&from=-365d&title={{m}} - year' />
+    </div>
+</div>
 % end

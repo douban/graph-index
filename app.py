@@ -78,6 +78,11 @@ def plugin(server = '', plugin = ''):
     body = template('templates/plugin', **locals())
     return render_page(body)
 
+@route('/metric/<metric_name>', method = 'GET')
+def metric(metric_name = ''):
+    body = template('templates/metric', m = metric_name)
+    return render_page(body)
+
 @route('/regex/', method = 'GET')
 def regex():
     search = request.query.get('search', '')
