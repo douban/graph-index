@@ -1,12 +1,12 @@
 <div id = 'index'>
     <ul>
     % for s in sorted(diamond.keys()):
-        <li>{{s}}
-            <ul>
+        <li><a href = '/server/{{s}}'>{{s}}</a>
+            <div class = 'plugins'>
             % for p in sorted(diamond[s].keys()):
-                <li class = 'plugin'>{{p}}</li>
+                <span class = 'plugin'><a href = '{{'server/' + s + '/' + p}}'>{{p}}</a></span>
             % end
-            </ul>
+            </div>
         </li>
     % end
     </ul>

@@ -45,6 +45,9 @@ def get_diamond():
     return diamond
 
 
+diamond = get_diamond()
+
+
 def render_page(body, **kwargs):
     return str(template('templates/base', body = body, **kwargs))
 
@@ -53,12 +56,26 @@ def render_page(body, **kwargs):
 @route('/index', method = 'GET')
 @route('/index', method = 'POST')
 def index():
+    global diamond
     if request.method == 'POST':
         search = request.forms.get('search', '')
         if search.strip():
             return redirect('/regex/?' + urlencode({'search':search}))
-    diamond = get_diamond()
-    body = template('templates/index', **locals())
+    body = template('templates/index', diamond = diamond)
+    return render_page(body)
+
+@route('/server/<server>', method = 'GET')
+def plugin(server = ''):
+    global diamond
+    data = diamond[server]
+    body = template('templates/server', **locals())
+    return render_page(body)
+
+@route('/server/<server>/<plugin>', method = 'GET')
+def plugin(server = '', plugin = ''):
+    global diamond
+    data = diamond[server][plugin]
+    body = template('templates/plugin', **locals())
     return render_page(body)
 
 @route('/regex/', method = 'GET')

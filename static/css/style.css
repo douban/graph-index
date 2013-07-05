@@ -11,6 +11,7 @@
 #container {
     width: 100%;
     margin-top: 60px;
+    padding-bottom: 60px;
 }
 
 #container div.graph-row {
@@ -30,6 +31,6 @@ ul {
     margin-left: 50px;
 }
 
-li.metric {
-    float: left;
+span.plugin {
+    margin-left: 20px;
 }
