@@ -42,14 +42,6 @@ def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
                 data[s] = diamond[s][plugin]
     return data
 
-def find_plugins():
-    global diamond
-    plugins = {} # very fast
-    for s in diamond.keys():
-        for p in diamond[s].keys():
-            plugins[p] = True
-    return plugins.keys()
-
 
 def get_diamond():
     global metrics
@@ -87,8 +79,12 @@ def index():
 
 @route('/dashboard', method = 'GET')
 def dashboard():
-    plugins = find_plugins()
-    logging.info(len(plugins))
+    global diamond
+    plugins = defaultdict(dict)
+    for s in diamond.keys():
+        prefix  = re.sub('\d+$', '', s)
+        for p in diamond[s].keys():
+            plugins[p][prefix] = True # dict is faster than set
     body = template('templates/dashboard', **locals())
     return render_page(body, page = 'dashboard')
 
