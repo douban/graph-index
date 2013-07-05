@@ -11,4 +11,4 @@ if app_dir:
 
 debug(True)
 
-run('app', host = config.listen_host, port = config.listen_port)
+run('app', host = config.listen_host, port = config.listen_port, reloader = True)

@@ -9,16 +9,27 @@
 }
 
 #container {
+    width: 100%;
     margin-top: 60px;
 }
 
-#container img {
-    margin: 5px;
-    border: none;
+#container div.graph-row {
+    float: left;
+    width: 100%;
+    text-align: center;
 }
 
-div.graph-row {
+#container div.graph {
+    border: none;
+    text-align: center;
     margin-left: auto;
     margin-right: auto;
-    text-align: center;
+}
+
+ul {
+    margin-left: 50px;
+}
+
+li.metric {
+    float: left;
 }

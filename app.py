@@ -5,13 +5,17 @@ import json
 import urllib2
 import logging
 from urllib import urlencode
+from collections import defaultdict
 from bottle import route, run, template, static_file, request, redirect
 
 import config
 
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
-metrics = json.loads(urllib2.urlopen(config.graphite_url + '/metrics/index.json').read())
+diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
+
+#metrics = json.loads(urllib2.urlopen(config.graphite_url + '/metrics/index.json').read())
+metrics = json.loads(open('metrics.json').read())
 
 
 def find_metrics(search):
@@ -26,6 +30,19 @@ def find_metrics(search):
             matched_metrics.append(m)
     return matched_metrics
 
+def get_diamond():
+    global metrics
+    diamond = {}
+    for m in metrics:
+        o = diamond_re.match(m)
+        if o:
+            d = o.groupdict()
+            if not diamond.has_key(d['server']):
+                diamond[d['server']] = {}
+            if not diamond[d['server']].has_key(d['plugin']):
+                diamond[d['server']][d['plugin']] = []
+            diamond[d['server']][d['plugin']].append(m)
+    return diamond
 
 
 def render_page(body, **kwargs):
@@ -40,7 +57,8 @@ def index():
         search = request.forms.get('search', '')
         if search.strip():
             return redirect('/regex/?' + urlencode({'search':search}))
-    body = template('templates/index')
+    diamond = get_diamond()
+    body = template('templates/index', **locals())
     return render_page(body)
 
 @route('/regex/', method = 'GET')
