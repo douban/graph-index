@@ -17,7 +17,7 @@
           <a class="brand" href="/">Graph Index</a>
           <div class="nav-collapse">
             <ul class="nav">
-	% for (key, title) in [('index', 'Home'), ]:
+	% for (key, title) in [('index', 'Home'), ('dashboard', 'Dashboard'), ]:
 		% if page == key:
               <li class="active"><a href="/{{key}}">{{title}}</a></li>
 		% else:

@@ -41,6 +41,15 @@ def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
             data[s] = diamond[s][plugin]
     return data
 
+def find_plugins():
+    global diamond
+    plugins = {} # very fast
+    for s in plugins.keys():
+        for p in s.keys():
+            plugins[p] = True
+    return plugins.keys()
+
+
 def get_diamond():
     global metrics
     diamond = {}
@@ -73,6 +82,12 @@ def index():
         if search.strip():
             return redirect('/regex/?' + urlencode({'search':search}))
     body = template('templates/index', diamond = diamond)
+    return render_page(body)
+
+@route('/dashboard', method = 'GET')
+def dashboard():
+    plugins = find_plugins()
+    body = template('templates/dashboard')
     return render_page(body)
 
 @route('/server/<server>', method = 'GET')
