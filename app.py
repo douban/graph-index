@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import re
 import json
 import urllib2
@@ -14,8 +15,16 @@ logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG
 
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
 
-#metrics = json.loads(urllib2.urlopen(config.graphite_url + '/metrics/index.json').read())
-metrics = json.loads(open('metrics.json').read())
+if os.path.exists(config.metrics_file):
+    metrics = json.loads(open(config.metrics_file).read())
+else:
+    data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
+    try:
+        open(config.metrics_file, 'w').write(data)
+    except:
+        logging.warning('dumps %s error' % config.metrics_file)
+        pass
+    metrics = json.loads(data)
 
 diamond = None
 
