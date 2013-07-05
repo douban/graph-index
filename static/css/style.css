@@ -34,3 +34,8 @@ ul {
 span.plugin {
     margin-left: 20px;
 }
+
+.dashboard-url {
+    float: left;
+    margin-left: 50px;
+}

@@ -38,14 +38,15 @@ def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
     re_obj = re.compile(server_regex)
     for s in diamond.keys():
         if re_obj.match(s):
-            data[s] = diamond[s][plugin]
+            if diamond[s].has_key(plugin):
+                data[s] = diamond[s][plugin]
     return data
 
 def find_plugins():
     global diamond
     plugins = {} # very fast
-    for s in plugins.keys():
-        for p in s.keys():
+    for s in diamond.keys():
+        for p in diamond[s].keys():
             plugins[p] = True
     return plugins.keys()
 
@@ -87,8 +88,9 @@ def index():
 @route('/dashboard', method = 'GET')
 def dashboard():
     plugins = find_plugins()
-    body = template('templates/dashboard')
-    return render_page(body)
+    logging.info(len(plugins))
+    body = template('templates/dashboard', **locals())
+    return render_page(body, page = 'dashboard')
 
 @route('/server/<server>', method = 'GET')
 def plugin(server = ''):
