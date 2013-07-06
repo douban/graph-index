@@ -14,6 +14,11 @@ import config
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
+bad_metric = [
+    re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
+]
+diamond = None
+
 
 if os.path.exists(config.metrics_file):
     metrics = json.loads(open(config.metrics_file).read())
@@ -26,8 +31,11 @@ else:
         pass
     metrics = json.loads(data)
 
-diamond = None
-
+def is_bad_metric(metric):
+    global bad_metric
+    for r in bad_metric:
+        if r.match(metric):
+            return True
 
 def find_metrics(search):
     global metrics
@@ -56,6 +64,8 @@ def get_diamond():
     global metrics
     diamond = {}
     for m in metrics:
+        if is_bad_metric(m):
+            continue
         o = diamond_re.match(m)
         if o:
             d = o.groupdict()
