@@ -8,4 +8,4 @@ cd graph-index
 ./graph-index.py
 ```
 
-if `metrics` is becoming more and more, rm `metrics.json` when to update
+if `metrics` is becoming more and more, rm `metrics.json` then restart graph-index
