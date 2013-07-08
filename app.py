@@ -151,13 +151,20 @@ def metric(metric_name = ''):
 @route('/regex/', method = 'GET')
 def regex():
     search = request.query.get('search', '')
-    if ':' in search:
+    errors = []
+    if search.strip() in ['.*', '.*?']:
+        errors.append('are you joking me?')
+    elif ':' in search:
         plugin, server_regex = search.strip().split(':')
         data = find_metrics_of_plugin_by_server_regex(plugin, server_regex)
         body = template('templates/plugin-regex', **locals())
     else:
         matched_metrics = find_metrics(search)
+        if len(matched_metrics) == 0:
+            errors.append('no metric is matched')
         body = template('templates/graph', **locals())
+    if errors:
+        body = template('templates/error', **locals())
     return render_page(body, search = search)
 
 @route('<path:re:/static/css/.*css>')

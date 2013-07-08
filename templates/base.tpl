@@ -1,5 +1,6 @@
 % setdefault('page', 'index')
 % setdefault('search', '')
+% setdefault('errors', [])
 <!DOCTYPE html>
 <html lang="en">
   <head>

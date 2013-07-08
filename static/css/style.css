@@ -1,4 +1,4 @@
-* {
+#container, html, body, head {
     background-color: black;
 }
 
