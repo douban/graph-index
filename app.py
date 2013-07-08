@@ -70,7 +70,8 @@ def get_plugins_paths():
             d = o.groupdict()
             server = d.get('server')
             plugin = d.get('plugin')
-            data[plugin][m.lstrip('%s.%s.' % (server, plugin))] = True
+            path = m[len('servers.%s.%s.' % (server, plugin)):]
+            data[plugin][path] = True
     return data
 
 def get_diamond():

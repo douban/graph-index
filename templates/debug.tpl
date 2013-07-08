@@ -1,9 +1,9 @@
 %setdefault('data', None)
 % if data:
-    % for p in sorted(data.keys()):
-        <ul>{{p}}
+    % for plugin in sorted(data.keys()):
+        <ul>{{plugin}}
             <ul>
-            % for path in sorted(data[p]):
+            % for path in sorted(data[plugin]):
                 <li>{{path}}</li>
             % end
             </ul>
