@@ -59,6 +59,19 @@ def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
                 data[s] = diamond[s][plugin]
     return data
 
+def get_plugins_paths():
+    global metrics
+    data = defaultdict(dict) # dict is faster than set
+    for m in metrics:
+        if is_bad_metric(m):
+            continue
+        o = diamond_re.match(m)
+        if o:
+            d = o.groupdict()
+            server = d.get('server')
+            plugin = d.get('plugin')
+            data[plugin][m.lstrip('%s.%s.' % (server, plugin))] = True
+    return data
 
 def get_diamond():
     global metrics
@@ -120,6 +133,12 @@ def plugin(server = '', plugin = ''):
     data = diamond[server][plugin]
     body = template('templates/plugin', **locals())
     return render_page(body)
+
+@route('/debug', method = 'GET')
+def debug():
+    data = get_plugins_paths()
+    body = template('templates/plugin', **locals())
+    return render_page(body, page = 'debug')
 
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
