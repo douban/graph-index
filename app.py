@@ -108,7 +108,7 @@ def dashboard():
     return render_page(body, page = 'dashboard')
 
 @route('/server/<server>', method = 'GET')
-def plugin(server = ''):
+def server(server = ''):
     global diamond
     data = diamond[server]
     body = template('templates/server', **locals())
