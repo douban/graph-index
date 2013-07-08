@@ -137,8 +137,10 @@ def plugin(server = '', plugin = ''):
 
 @route('/debug', method = 'GET')
 def debug():
+    global diamond
+    global metrics
     data = get_plugins_paths()
-    body = template('templates/debug', **locals())
+    body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
     return render_page(body, page = 'debug')
 
 @route('/metric/<metric_name>', method = 'GET')
