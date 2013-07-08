@@ -21,14 +21,18 @@ diamond = None
 
 
 if os.path.exists(config.metrics_file):
+    logging.info('load metrics.json from disk cache')
     metrics = json.loads(open(config.metrics_file).read())
 else:
-    data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
+    url = config.graphite_url + '/metrics/index.json'
+    try:
+        data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
+    except:
+        logging.warning('open %s error' % url)
     try:
         open(config.metrics_file, 'w').write(data)
     except:
         logging.warning('dumps %s error' % config.metrics_file)
-        pass
     metrics = json.loads(data)
 
 def is_bad_metric(metric):
