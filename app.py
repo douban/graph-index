@@ -137,7 +137,7 @@ def plugin(server = '', plugin = ''):
 @route('/debug', method = 'GET')
 def debug():
     data = get_plugins_paths()
-    body = template('templates/plugin', **locals())
+    body = template('templates/debug', **locals())
     return render_page(body, page = 'debug')
 
 @route('/metric/<metric_name>', method = 'GET')
