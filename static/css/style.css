@@ -14,15 +14,13 @@
     padding-bottom: 60px;
 }
 
-#container div.graph-row {
+div.graph-row {
     float: left;
     width: 100%;
     text-align: center;
 }
 
-#container div.graph {
-    border: none;
-    text-align: center;
+table.graph {
     margin-left: auto;
     margin-right: auto;
 }
