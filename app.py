@@ -16,6 +16,7 @@ logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
 bad_metric = [
     re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
+    re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
 ]
 diamond = None
 
