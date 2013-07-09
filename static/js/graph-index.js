@@ -27,5 +27,5 @@ $(document).ready(function(){
 			var img = $(day_graphs[i]);
 			change_image(img);
 		}
-	}, 5000);
+	}, 10000);
 });
