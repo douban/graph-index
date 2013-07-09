@@ -1,7 +1,10 @@
 <div id = 'index'>
     <div class = 'row'>
         <div class = 'row alert alert-info span4'>
-            more details of each plugin in  <a href = '/debug'><strong>/debug</strong></a>
+            <h4>help</h4>
+            <p>
+                more details of each plugin in  <a href = '/debug'><strong>/debug</strong></a>
+            </p>
         </div>
     </div>
     <div class = 'row'>
