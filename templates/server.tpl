@@ -8,10 +8,10 @@
     <table class = 'graph'>
         <tr>
             <td>
-                <img class = 'day-graph' src = '{{config.graphite_url}}/render/?width=600&height=400&{{target}}&&title={{p}} - day' />
+                <img class = 'day-graph' src = '{{config.graphite_url}}/render/?width=600&height=400&{{target}}&&title={{server}} - {{p}} - day' />
             </td>
             <td>
-                <img src = '{{config.graphite_url}}/render/?width=600&height=400&{{target}}&from=-7d&title={{p}} - week' />
+                <img src = '{{config.graphite_url}}/render/?width=600&height=400&{{target}}&from=-7d&title={{server}} - {{p}} - week' />
             </td>
         </tr>
     </table>

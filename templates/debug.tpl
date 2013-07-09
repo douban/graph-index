@@ -1,6 +1,4 @@
-<h2>plugins: {{len(set(reduce(lambda x,y:x+y, [diamond[s].keys() for s in diamond.keys()])))}}</h2>
-<h2>paths: {{len(reduce(lambda x,y:x+y, [p.keys() for p in data.values()]))}}</h2>
-<h2>metrics: {{len(metrics)}}</h2>
+<h2>plugins: {{len(set(reduce(lambda x,y:x+y, [diamond[s].keys() for s in diamond.keys()])))}}, paths: {{len(reduce(lambda x,y:x+y, [p.keys() for p in data.values()]))}}, metrics: {{len(metrics)}}</h2>
 <h2>details</h2>
 %setdefault('data', None)
 % if data:
