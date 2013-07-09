@@ -40,3 +40,7 @@ span.plugin {
 .dashboard-url {
     margin-right: 30px;
 }
+
+.float-left {
+    float: left;
+}
