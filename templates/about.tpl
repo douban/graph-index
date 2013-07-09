@@ -10,6 +10,7 @@
         <h2><strong>todo:</strong></h2>
         <ul>
             <li>split one graph of a plugin to multiple graphs</li>
+            <li>dynamicly update metrics.json and build related data structures</li>
         </ul>
     </div>
 </div>
