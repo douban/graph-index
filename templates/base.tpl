@@ -9,6 +9,7 @@
     <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/graph-index.js"></script>
   </head>
 
   <body>
