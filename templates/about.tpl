@@ -1,6 +1,6 @@
 <div id = 'about'>
     <div class = 'row'>
-        <h1><a href = 'https://github.com/huoxy/graph-index.git'><strong>fork me</strong></a> @ Github</h1>
+        <h1><a href = 'https://github.com/huoxy/graph-index'><strong>fork me</strong></a> @ Github</h1>
         <h2><strong>thanks to:</strong></h2>
         <ul>
             <li>bottle</li>
