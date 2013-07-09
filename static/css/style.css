@@ -44,3 +44,7 @@ span.plugin {
 .float-left {
     float: left;
 }
+
+#about {
+    margin-left: 50px;
+}

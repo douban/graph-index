@@ -148,6 +148,11 @@ def debug():
     body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
     return render_page(body, page = 'debug')
 
+@route('/about', method = 'GET')
+def about():
+    body = template('templates/about')
+    return render_page(body, page = 'about')
+
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
     body = template('templates/metric', m = metric_name)
