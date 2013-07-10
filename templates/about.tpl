@@ -11,7 +11,7 @@
         <ul>
             <li>split one graph of a plugin to multiple graphs</li>
             <li>dynamicly update metrics.json and build related data structures</li>
-            <li>range graph: select a period of time with mouse, then graph it</li>
+            <li>zoom graph: select a period of time with mouse, then zoom in/out</li>
         </ul>
     </div>
 </div>
