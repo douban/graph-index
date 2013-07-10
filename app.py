@@ -46,7 +46,7 @@ def find_metrics(search):
     global metrics
     matched_metrics = []
     try:
-        re_obj = re.compile(search)
+        re_obj = re.compile(search, re.IGNORECASE)
     except:
         return None
     for m in metrics:
