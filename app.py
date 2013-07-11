@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 import json
 import urllib2
 import logging
@@ -20,21 +21,17 @@ bad_metric = [
 ]
 diamond = None
 
-
-if os.path.exists(config.metrics_file):
-    logging.info('load metrics.json from disk cache')
-    metrics = json.loads(open(config.metrics_file).read())
-else:
+def load_metrics():
     url = config.graphite_url + '/metrics/index.json'
     try:
         data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
-    except:
-        logging.warning('open %s error' % url)
-    try:
-        open(config.metrics_file, 'w').write(data)
-    except:
-        logging.warning('dumps %s error' % config.metrics_file)
-    metrics = json.loads(data)
+        metrics = json.loads(data)
+    except Exception, e:
+        logging.warning(str(e))
+        sys.exit(1)
+    return metrics
+
+metrics = load_metrics()
 
 def is_bad_metric(metric):
     global bad_metric
