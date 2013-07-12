@@ -22,7 +22,7 @@ bad_metric = [
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
 diamond = None
-groupby_re = re.compile('^(?P<search>[^ ]*)\s+groupby(?P<index>\-?\d+)$')
+groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
 def load_metrics():
     url = config.graphite_url + '/metrics/index.json'
