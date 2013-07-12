@@ -173,7 +173,7 @@ def regex():
             body = template('templates/merge', **locals())
     else: # search is common regex without any prefix
         data = find_metrics(search)
-        if len(matched_metrics) == 0:
+        if len(data) == 0:
             errors.append('no metric is matched')
         body = template('templates/graph', **locals())
     if errors:
