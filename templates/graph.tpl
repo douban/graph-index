@@ -10,7 +10,7 @@
                 <img class = 'graph day-graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target=alias({{m}},"today")&target=alias(dashed(timeShift({{m}},"7d")),"7 days ago")&title={{m}}&from=-1d' />
             </td>
             <td>
-                <img class = 'graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&from=-7d&title={{m}} - week' />
+                <img class = 'week' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&from=-7d&title={{m}} - week' />
             </td>
         </tr>
     </table>

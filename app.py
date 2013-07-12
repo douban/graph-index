@@ -18,6 +18,7 @@ diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
 bad_metric = [
     re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
+    re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
 diamond = None
 
