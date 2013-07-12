@@ -1,5 +1,5 @@
 metrics.json
-config.*
+config.py
 ## PYTHON
 *.py[cod]
 data
