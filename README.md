@@ -12,3 +12,10 @@ git clone https://github.com/huoxy/graph-index.git
 cd graph-index
 ./graph-index.py
 ```
+# Grammer
+
+`regex` will draw a graph for each metric, for example: `servers.[^\.]+.loadavg.01$`
+
+`plugin:server:regex` will display a graph with all metrics on `hostname`,for example: `plugin:cpu:hostname`
+
+`merge:regex` will merge matched metrics in a single graph, for example: `merge:.*loadavg\.01$`
