@@ -2,7 +2,6 @@ metrics.json
 config.py
 # Python
 *.py[cod]
-data
 
 # C extensions
 *.so
