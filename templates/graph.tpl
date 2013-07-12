@@ -1,7 +1,7 @@
-%setdefault('matched_metrics', None)
-%import config
-% if matched_metrics:
-% for m in matched_metrics:
+% setdefault('data', None)
+% import config
+% if data:
+% for m in data:
 <div class = 'graph-row'>
     <h4><a href = '/metric/{{m}}'>{{m}}</a></h4>
     <table class = 'graph'>

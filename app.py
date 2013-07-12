@@ -161,13 +161,18 @@ def regex():
     search = request.query.get('search', '')
     errors = []
     if search.strip() in ['.*', '.*?']:
-        errors.append('are you joking me?')
+        errors.append('are you kidding me?')
     elif ':' in search:
-        plugin, server_regex = search.strip().split(':')
-        data = find_metrics_of_plugin_by_server_regex(plugin, server_regex)
-        body = template('templates/plugin-regex', **locals())
-    else:
-        matched_metrics = find_metrics(search)
+        if search.startswith('plugin:'): # search == 'plugin:'
+            _, plugin, server_regex = search.strip().split(':', 2)
+            data = find_metrics_of_plugin_by_server_regex(plugin, server_regex)
+            body = template('templates/plugin-regex', **locals())
+        elif search.startswith('merge:'): # search == 'merge:'
+            _, regex = search.strip().split(':', 1)
+            data = find_metrics(regex)
+            body = template('templates/merge', **locals())
+    else: # search is common regex without any prefix
+        data = find_metrics(search)
         if len(matched_metrics) == 0:
             errors.append('no metric is matched')
         body = template('templates/graph', **locals())
