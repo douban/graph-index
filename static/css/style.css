@@ -45,6 +45,23 @@ span.plugin {
     float: left;
 }
 
+#docs {
+    float: left;
+    min-height: 600px;
+    border-right: 1px solid #222;
+}
+
+#docs li {
+    font-size: 1.5em;
+    line-height: 1.5em;
+}
+
+span.grammar {
+    font-weight: bold;
+    color: white;
+}
+
 #about {
-    margin-left: 50px;
+    float: left;
+    padding-left: 50px;
 }
