@@ -6,6 +6,7 @@ import sys
 import json
 import urllib2
 import logging
+import itertools
 from urllib import urlencode
 from collections import defaultdict
 from bottle import route, template, static_file, request, redirect, default_app
@@ -21,6 +22,7 @@ bad_metric = [
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
 diamond = None
+groupby_re = re.compile('^(?P<search>[^ ]*)\s+groupby(?P<index>\-?\d+)$')
 
 def load_metrics():
     url = config.graphite_url + '/metrics/index.json'
@@ -51,6 +53,12 @@ def find_metrics(search):
         if re_obj.search(m):
             matched_metrics.append(m)
     return matched_metrics
+
+def find_groupby(search, index):
+    matched_metrics = find_metrics(search)
+    return [list(g[1]) for g in itertools.groupby(sorted(matched_metrics, \
+            key = lambda x:x.split('.')[int(index)]), \
+            lambda x:x.split('.')[int(index)])]
 
 def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
     global diamond
@@ -172,10 +180,15 @@ def regex():
             data = find_metrics(regex)
             body = template('templates/merge', **locals())
     else: # search is common regex without any prefix
-        data = find_metrics(search)
-        if len(data) == 0:
-            errors.append('no metric is matched')
-        body = template('templates/graph', **locals())
+        o = groupby_re.match(search)
+        if o:
+            data = find_groupby(**o.groupdict())
+            body = template('templates/groupby', **locals())
+        else:
+            data = find_metrics(search)
+            if len(data) == 0:
+                errors.append('no metric is matched')
+            body = template('templates/graph', **locals())
     if errors:
         body = template('templates/error', **locals())
     return render_page(body, search = search)
