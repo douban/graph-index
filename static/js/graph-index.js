@@ -22,7 +22,7 @@ function change_image(image) {
 
 $(document).ready(function(){
 	setInterval(function(){
-		var day_graphs = $('.day-graph');
+		var day_graphs = $('.day');
 		for (var i=0; i<day_graphs.length; i++) {
 			var img = $(day_graphs[i]);
 			change_image(img);

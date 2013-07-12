@@ -4,7 +4,7 @@
     <table class = 'graph'>
         <tr>
             <td>
-                <img class = 'day-graph' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&&title={{m}} - day' />
+                <img class = 'day' src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&&title={{m}} - day' />
             </td>
             <td>
                 <img src = '{{config.graphite_url}}/render/?width=600&height=400&target={{m}}&from=-7d&title={{m}} - week' />
