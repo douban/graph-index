@@ -158,7 +158,7 @@ def debug():
     return render_page(body, page = 'debug')
 
 @route('/meta', method = 'GET')
-def about():
+def meta():
     body = template('templates/meta')
     return render_page(body, page = 'meta')
 
