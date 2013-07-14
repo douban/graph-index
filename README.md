@@ -12,7 +12,7 @@ git clone https://github.com/huoxy/graph-index.git
 cd graph-index
 ./graph-index.py
 ```
-# Grammer
+# Grammar
 
 `regex` will draw a graph for each metric, for example: `servers.[^\.]+.loadavg.01$`
 
