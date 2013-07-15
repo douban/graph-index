@@ -157,10 +157,10 @@ def debug():
     body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
     return render_page(body, page = 'debug')
 
-@route('/meta', method = 'GET')
+@route('/docs', method = 'GET')
 def meta():
-    body = template('templates/meta')
-    return render_page(body, page = 'meta')
+    body = template('templates/docs')
+    return render_page(body, page = 'docs')
 
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
