@@ -12,6 +12,10 @@
             <li><span class = 'grammar'>merge:&lt;regex&gt;</span><br />
                 draw a single graphs of all the matched metrics
         </ul>
+        <h2>Suggested Queries</h2>
+        <p>
+            add more in suggested_queries.py
+        </p>
     </div>
     <div id = 'about'>
             <h1><a href = 'https://github.com/huoxy/graph-index'><strong>fork me</strong></a> @ Github</h1>
