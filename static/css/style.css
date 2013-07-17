@@ -14,10 +14,6 @@
     padding-bottom: 60px;
 }
 
-#container a {
-    font-size: 1.3em;
-}
-
 div.graph-row {
     float: left;
     width: 100%;
@@ -53,11 +49,6 @@ span.plugin {
     float: left;
     min-height: 600px;
     border-right: 1px solid #222;
-}
-
-#docs li {
-    font-size: 1.5em;
-    line-height: 1.5em;
 }
 
 span.grammar {
