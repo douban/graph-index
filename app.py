@@ -12,6 +12,7 @@ from collections import defaultdict
 from bottle import route, template, static_file, request, redirect, default_app
 
 import config
+from suggested_queries import suggested_queries
 
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
@@ -116,12 +117,12 @@ def render_page(body, **kwargs):
 @route('/index', method = 'GET')
 @route('/index', method = 'POST')
 def index():
-    global diamond
+    global diamond, suggested_queries
     if request.method == 'POST':
         search = request.forms.get('search', '')
         if search.strip():
             return redirect('/regex/?' + urlencode({'search':search}))
-    body = template('templates/index', diamond = diamond)
+    body = template('templates/index', diamond = diamond, suggested_queries = suggested_queries)
     return render_page(body)
 
 @route('/dashboard', method = 'GET')

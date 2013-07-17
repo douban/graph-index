@@ -1,12 +1,20 @@
-<div id = 'index'>
-    <div class = 'row'>
-        <div class = 'row alert alert-info span4'>
-            <h4>help</h4>
+% setdefault('suggested_queries', [])
+% from urllib import urlencode
+<div id = 'sidebar' class = 'well span4'>
+    <span class = 'nav-header'>suggested queries</span>
+    <ul class = 'nav nav-list'>
+    % for q in suggested_queries:
+        <li><a href = '/regex/?{{urlencode({'search':q})}}'>{{q}}</a></li>
+    % end
+        <li class = 'divider' />
+        <li>
             <p>
-                more details of each plugin in  <a href = '/debug'><strong>/debug</strong></a>
+                more details in  <a href = '/debug'><strong>/debug</strong></a>
             </p>
-        </div>
-    </div>
+        </li>
+    </ul>
+</div>
+<div id = 'index' class = 'span12'>
     <div class = 'row'>
         <div class = 'float-left'>
             <ul>
