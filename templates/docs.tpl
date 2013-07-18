@@ -8,7 +8,7 @@
                 draw a graph for each <strong>group</strong> group by the index-th field of matched metrics
             <li><span class = 'grammar'>plugin:&lt;plugin_name&gt;:&lt;server_prefix&gt;</span><br />
                 draw many groups of a list of servers, and combined metrics of a server in a single graph<br />
-                <b>for example:</b> if we have servers: host1, host2, ... hostN, then the server_prefix may be "host"
+                <b>for example:</b> if we have servers: host1, host2, ... hostN, then the server_prefix will be "host"
             <li><span class = 'grammar'>merge:&lt;regex&gt;</span><br />
                 draw a single graphs of all the matched metrics
         </ul>
