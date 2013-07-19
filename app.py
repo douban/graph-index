@@ -199,6 +199,7 @@ def regex():
         body = template('templates/error', **locals())
     return render_page(body, search = search)
 
+@route('<path:re:/favicon.ico>')
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
 def static(path, method = 'GET'):
