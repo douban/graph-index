@@ -29,7 +29,11 @@ def load_metrics():
     url = config.graphite_url + '/metrics/index.json'
     try:
         if config.debug:
-            data = open('metrics.json').read()
+            if os.path.exists('metrics.json'):
+                data = open('metrics.json').read()
+            else:
+                data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
+                open('metrics.json', 'w').write(json.dumps(json.loads(data)))
         else:
             data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
         metrics = json.loads(data)
