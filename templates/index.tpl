@@ -17,7 +17,7 @@
         </li>
     </ul>
 </div>
-<div id = 'index' class = 'span12'>
+<div id = 'index' class = 'span10'>
     <div class = 'row'>
         <div class = 'float-left'>
             <ul>
