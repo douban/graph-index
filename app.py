@@ -28,15 +28,13 @@ groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 def load_metrics():
     url = config.graphite_url + '/metrics/index.json'
     try:
-        if config.debug:
-            if os.path.exists('metrics.json'):
-                data = open('metrics.json').read()
-            else:
-                data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
-                open('metrics.json', 'w').write(json.dumps(json.loads(data)))
+        if os.path.exists(config.metrics_file) and config.debug:
+            data = open(config.metrics_file).read()
         else:
             data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
         metrics = json.loads(data)
+        if config.debug:
+            open(config.metrics_file, 'w').write(json.dumps(metrics))
     except Exception, e:
         logging.warning(str(e))
         sys.exit(1)
