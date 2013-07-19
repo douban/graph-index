@@ -7,9 +7,12 @@
         <li><a href = '/regex/?{{urlencode({'search':q})}}'>{{q}}</a></li>
     % end
         <li class = 'divider' />
+    </ul>
+    <ul class = 'nav nav-list'>
         <li>
+            <span class = 'nav-header'>help</span>
             <p>
-                more details in  <a href = '/debug'><strong>/debug</strong></a>
+                goto <a href = '/debug'><strong>/debug</strong></a> to see more details about each plugin 
             </p>
         </li>
     </ul>
