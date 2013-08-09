@@ -202,6 +202,7 @@ def regex():
 @route('<path:re:/favicon.ico>')
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
+@route('<path:re:/static/fonts/.*woff>')
 def static(path, method = 'GET'):
     return static_file(path, root = '.')
 
