@@ -62,7 +62,7 @@ def find_metrics(search):
 
 def find_groupby(search, index):
     matched_metrics = find_metrics(search)
-    return [list(g[1]) for g in itertools.groupby(sorted(matched_metrics, \
+    return [(g[0], list(g[1])) for g in itertools.groupby(sorted(matched_metrics, \
             key = lambda x:x.split('.')[int(index)]), \
             lambda x:x.split('.')[int(index)])]
 
@@ -167,8 +167,15 @@ def meta():
 
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
-    body = template('templates/metric', m = metric_name)
+    _metrics = ['target=%s' % m for m in metric_name.split(',')]
+    title = request.query.get('title', metric_name)
+    targets = '&'.join(_metrics)
+    body = template('templates/metric', targets=targets, title=title)
     return render_page(body)
+
+@route('/metrics/<metric_name>', method = 'GET')
+def _metrics(*args, **kwargs):
+    return metric(*args, **kwargs)
 
 @route('/regex/', method = 'GET')
 def regex():
