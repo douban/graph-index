@@ -1,9 +1,11 @@
 %setdefault('data', None)
 %import config
 % if data:
-    % for metrics in data:
+    % for group, metrics in data:
         % target = '&'.join('target=' + m for m in metrics)
+        % metrics = ','.join(metrics)
 <div class = 'graph-row'>
+    <h4><a href = '/metrics/{{metrics}}?title={{group}}'>{{group}}</a></h4>
     <table class = 'graph'>
         <tr>
             <td>
