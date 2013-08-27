@@ -31,7 +31,7 @@ def load_metrics():
         if os.path.exists(config.metrics_file) and config.debug:
             data = open(config.metrics_file).read()
         else:
-            data = urllib2.urlopen(config.graphite_url + '/metrics/index.json').read()
+            data = urllib2.urlopen(url).read()
         metrics = json.loads(data)
         if config.debug:
             open(config.metrics_file, 'w').write(json.dumps(metrics))
