@@ -26,7 +26,7 @@ diamond = None
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
 def load_metrics():
-    url = config.graphite_url + '/metrics/index.json'
+    url = config.graphite_url + '/metrics/index_all.json'
     try:
         if os.path.exists(config.metrics_file) and config.debug:
             data = open(config.metrics_file).read()
