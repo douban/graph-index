@@ -25,6 +25,12 @@ bad_metric = [
 diamond = None
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
+def is_bad_metric(metric):
+    global bad_metric
+    for r in bad_metric:
+        if r.match(metric):
+            return True
+
 def load_metrics():
     url = config.graphite_url + '/metrics/index_all.json'
     try:
@@ -33,6 +39,7 @@ def load_metrics():
         else:
             data = urllib2.urlopen(url).read()
         metrics = json.loads(data)
+        metrics = filter(lambda x: not is_bad_metric(x), metrics)
         if config.debug:
             open(config.metrics_file, 'w').write(json.dumps(metrics))
     except Exception, e:
@@ -41,12 +48,6 @@ def load_metrics():
     return metrics
 
 metrics = load_metrics()
-
-def is_bad_metric(metric):
-    global bad_metric
-    for r in bad_metric:
-        if r.match(metric):
-            return True
 
 def find_metrics(search):
     global metrics
@@ -80,8 +81,6 @@ def get_plugins_paths():
     global metrics
     data = defaultdict(dict) # dict is faster than set
     for m in metrics:
-        if is_bad_metric(m):
-            continue
         o = diamond_re.match(m)
         if o:
             d = o.groupdict()
@@ -95,8 +94,6 @@ def get_diamond():
     global metrics
     diamond = {}
     for m in metrics:
-        if is_bad_metric(m):
-            continue
         o = diamond_re.match(m)
         if o:
             d = o.groupdict()
