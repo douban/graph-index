@@ -18,37 +18,57 @@ from suggested_queries import suggested_queries
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
+diamond_re_device = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>(network|iostat))\.(?P<device>[^\.]+)\..*$')
 bad_metrics = [
     re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
-diamond = None
+diamond = defaultdict(dict)
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
 def is_bad_metric(metric):
-    global bad_metric
+    global bad_metrics
     for r in bad_metrics:
         if r.match(metric):
             return True
 
-def load_metrics():
-    url = config.graphite_url + '/metrics/index_all.json'
+def build_metrics():
+    global metrics
     try:
         if os.path.exists(config.metrics_file) and config.debug:
             data = open(config.metrics_file).read()
         else:
-            data = urllib2.urlopen(url).read()
+            data = urllib2.urlopen(config.graphite_index_url).read()
         metrics = json.loads(data)
-        metrics = filter(lambda x: not is_bad_metric(x), metrics)
+        metrics = filter(lambda x: x.startswith('servers.') and \
+                    not is_bad_metric(x), metrics) # drop bad metrics
         if config.debug:
             open(config.metrics_file, 'w').write(json.dumps(metrics))
     except Exception, e:
         logging.warning(str(e))
         sys.exit(1)
-    return metrics
 
-metrics = load_metrics()
+def build_diamond():
+    global metrics, diamond
+    for metric in metrics:
+        matched = filter(lambda x: x is not None, map(lambda x: x.match(metric), \
+            [diamond_re_device, diamond_re]))
+        if matched:
+            match = matched[0].groupdict()
+        else:
+            continue
+        server = match.get('server')
+        plugin = match.get('plugin')
+        if match.has_key('device'):
+            plugin = plugin + '_' + match.get('device')
+        if not diamond[server].has_key(plugin):
+            diamond[server][plugin] = []
+        diamond[server][plugin].append(metric)
+
+build_metrics()
+build_diamond()
+
 
 def find_metrics(search):
     global metrics
@@ -90,22 +110,6 @@ def get_plugins_paths():
             path = m[len('servers.%s.%s.' % (server, plugin)):]
             data[plugin][path] = True
     return data
-
-def get_diamond():
-    global metrics
-    diamond = {}
-    for m in metrics:
-        o = diamond_re.match(m)
-        if o:
-            d = o.groupdict()
-            if not diamond.has_key(d['server']):
-                diamond[d['server']] = {}
-            if not diamond[d['server']].has_key(d['plugin']):
-                diamond[d['server']][d['plugin']] = []
-            diamond[d['server']][d['plugin']].append(m)
-    return diamond
-
-diamond = get_diamond()
 
 
 
