@@ -18,7 +18,7 @@ from suggested_queries import suggested_queries
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
-diamond_re_device = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>(network|iostat))\.(?P<device>[^\.]+)\..*$')
+diamond_re_more = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>(network|iostat))\.(?P<more>[^\.]+)\..*$')
 bad_metrics = [
     re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
@@ -53,15 +53,15 @@ def build_diamond():
     global metrics, diamond
     for metric in metrics:
         matched = filter(lambda x: x is not None, map(lambda x: x.match(metric), \
-            [diamond_re_device, diamond_re]))
+            [diamond_re_more, diamond_re]))
         if matched:
             match = matched[0].groupdict()
         else:
             continue
         server = match.get('server')
         plugin = match.get('plugin')
-        if match.has_key('device'):
-            plugin = plugin + '_' + match.get('device')
+        if match.has_key('more'):
+            plugin = plugin + '-' + match.get('more')
         if not diamond[server].has_key(plugin):
             diamond[server][plugin] = []
         diamond[server][plugin].append(metric)
