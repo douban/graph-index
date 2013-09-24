@@ -66,7 +66,10 @@ def build_diamond():
             diamond[server][plugin] = []
         diamond[server][plugin].append(metric)
 
+logging.info('build metrics...')
 build_metrics()
+
+logging.info('build diamond...')
 build_diamond()
 
 
