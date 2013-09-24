@@ -12,12 +12,13 @@ from collections import defaultdict
 from bottle import route, template, static_file, request, redirect, default_app
 
 import config
+import models
 from suggested_queries import suggested_queries
 
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
-bad_metric = [
+bad_metrics = [
     re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
@@ -27,7 +28,7 @@ groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
 def is_bad_metric(metric):
     global bad_metric
-    for r in bad_metric:
+    for r in bad_metrics:
         if r.match(metric):
             return True
 
@@ -149,19 +150,6 @@ def plugin(server = '', plugin = ''):
     body = template('templates/plugin', **locals())
     return render_page(body)
 
-@route('/debug', method = 'GET')
-def debug():
-    global diamond
-    global metrics
-    data = get_plugins_paths()
-    body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
-    return render_page(body, page = 'debug')
-
-@route('/docs', method = 'GET')
-def meta():
-    body = template('templates/docs')
-    return render_page(body, page = 'docs')
-
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
     _metrics = ['target=%s' % m for m in metric_name.split(',')]
@@ -202,6 +190,19 @@ def regex():
     if errors:
         body = template('templates/error', **locals())
     return render_page(body, search = search)
+
+@route('/debug', method = 'GET')
+def debug():
+    global diamond
+    global metrics
+    data = get_plugins_paths()
+    body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
+    return render_page(body, page = 'debug')
+
+@route('/docs', method = 'GET')
+def docs():
+    body = template('templates/docs')
+    return render_page(body, page = 'docs')
 
 @route('<path:re:/favicon.ico>')
 @route('<path:re:/static/css/.*css>')

@@ -7,3 +7,15 @@ class Graph:
             setattr(self, k, v)
         self.base_url = config.graphite_url + '/render/?%s' % \
             ('&'.join('target=%s' % t for t in self.targets))
+        self.graph_args = {
+            'width' : 600,
+            'height' : 400,
+            'from' : '-1d',
+            'hideLegend' : 'False',
+        }
+
+    @property
+    def full_url(self):
+        return self.base_url + '&' + '&'.join('%s=%s' % (k, v) \
+                for k, v in self.graph_args.items())
+        
