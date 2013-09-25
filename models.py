@@ -15,7 +15,8 @@ class Graph:
         }
 
     @property
-    def full_url(self):
+    def full_url(self, **graph_args):
+        self.graph_args.update(graph_args)
         return self.base_url + '&' + '&'.join('%s=%s' % (k, v) \
                 for k, v in self.graph_args.items())
         
