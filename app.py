@@ -167,39 +167,42 @@ def _metrics(*args, **kwargs):
 @route('/regex/', method = 'GET')
 @route('/regex/', method = 'POST')
 def regex():
-    if request.method == 'POST':
-        search = request.forms.get('search', '')
-        return redirect('/regex/?' + urlencode({'search' : search}))
-
-    # GET, url will be like '/regex/?search=...'
-    search = request.query.get('search', '')
     errors = []
-    if search.strip() in ['.*', '.*?']:
-        errors.append('are you kidding me?')
-    elif ':' in search:
-        if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
-            _, plugin, server_regex = search.strip().split(':', 2)
-            graphs = []
-            data = do_plugin(plugin, server_regex)
-            for server in sorted(data.keys()):
-                graphs.append(Graph(data[server], title = server + ' ' + plugin))
-            body = template('templates/plugin-multi', **locals())
-        elif search.startswith('merge:'): # search == 'merge:'
-            _, regex = search.strip().split(':', 1)
-            graph = Graph(targets =  search_metrics(regex), title = 'a merged graph')
-            body = template('templates/merge', **locals())
-    else: # search is common regex without any prefix
-        match = groupby_re.match(search)
-        if match:
-            graphs = [ Graph(targets, title = group) for group, targets \
-                in do_groupby(**match.groupdict()) ]
-            body = template('templates/groupby', **locals())
+    if request.method == 'POST':
+        search = request.forms.get('search')
+        if not search.strip():
+            errors.append('search can not be none')
         else:
-            data = search_metrics(search)
-            if len(data) == 0:
-                errors.append('no metric is matched')
-            graphs = [ Graph(targets = [metric, ], title = metric) for metric in data ]
-            body = template('templates/list', **locals())
+            return redirect('/regex/?' + urlencode({'search' : search}))
+    elif request.method == 'GET':
+        # url will be like '/regex/?search=...'
+        search = request.query.get('search', '')
+        if search.strip() in ['.*', '.*?']:
+            errors.append('are you kidding me?')
+        elif ':' in search:
+            if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
+                _, plugin, server_regex = search.strip().split(':', 2)
+                graphs = []
+                data = do_plugin(plugin, server_regex)
+                for server in sorted(data.keys()):
+                    graphs.append(Graph(data[server], title = server + ' ' + plugin))
+                body = template('templates/plugin-multi', **locals())
+            elif search.startswith('merge:'): # search == 'merge:'
+                _, regex = search.strip().split(':', 1)
+                graph = Graph(targets =  search_metrics(regex), title = 'a merged graph')
+                body = template('templates/merge', **locals())
+        else: # search is common regex without any prefix
+            match = groupby_re.match(search)
+            if match:
+                graphs = [ Graph(targets, title = group) for group, targets \
+                    in do_groupby(**match.groupdict()) ]
+                body = template('templates/groupby', **locals())
+            else:
+                data = search_metrics(search)
+                if len(data) == 0:
+                    errors.append('no metric is matched')
+                graphs = [ Graph(targets = [metric, ], title = metric) for metric in data ]
+                body = template('templates/list', **locals())
     if errors:
         body = template('templates/error', **locals())
     return render_page(body, search = search)
