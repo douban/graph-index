@@ -52,8 +52,8 @@ def build_metrics():
 def build_diamond():
     global metrics, diamond
     for metric in metrics:
-        matched = filter(lambda x: x is not None, map(lambda x: x.match(metric), \
-            [diamond_re_more, diamond_re]))
+        matched = filter(lambda x: x is not None, \
+            map(lambda x: x.match(metric), [diamond_re_more, diamond_re]))
         if matched:
             match = matched[0].groupdict()
         else:
@@ -72,7 +72,6 @@ build_metrics()
 logging.info('build diamond...')
 build_diamond()
 
-
 def search_metrics(search):
     global metrics
     matched_metrics = []
@@ -85,7 +84,7 @@ def search_metrics(search):
             matched_metrics.append(m)
     return matched_metrics
 
-def find_groupby(search, index):
+def do_groupby(search, index):
     matched_metrics = search_metrics(search)
     return [(g[0], list(g[1])) for g in itertools.groupby(sorted(matched_metrics, \
             key = lambda x:x.split('.')[int(index)]), \
@@ -140,14 +139,16 @@ def dashboard():
 @route('/server/<server>', method = 'GET')
 def server(server = ''):
     global diamond
-    data = diamond[server]
-    body = template('templates/server', **locals())
+    graphs = []
+    for plugin in sorted(diamond[server].keys()):
+        graphs.append(Graph(diamond[server][plugin], title = server + ' ' + plugin))
+    body = template('templates/plugin-multi', **locals())
     return render_page(body)
 
 @route('/server/<server>/<plugin>', method = 'GET')
 def plugin(server = '', plugin = ''):
     global diamond
-    data = diamond[server][plugin]
+    graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
     body = template('templates/plugin', **locals())
     return render_page(body)
 
@@ -178,8 +179,11 @@ def regex():
     elif ':' in search:
         if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
             _, plugin, server_regex = search.strip().split(':', 2)
+            graphs = []
             data = do_plugin(plugin, server_regex)
-            body = template('templates/plugin-regex', **locals())
+            for server in sorted(data.keys()):
+                graphs.append(Graph(data[server], title = server + ' ' + plugin))
+            body = template('templates/plugin-multi', **locals())
         elif search.startswith('merge:'): # search == 'merge:'
             _, regex = search.strip().split(':', 1)
             graph = Graph(targets =  search_metrics(regex), title = 'a merged graph')
@@ -188,7 +192,7 @@ def regex():
         match = groupby_re.match(search)
         if match:
             graphs = [ Graph(targets, title = group) for group, targets \
-                in find_groupby(**match.groupdict()) ]
+                in do_groupby(**match.groupdict()) ]
             body = template('templates/groupby', **locals())
         else:
             data = search_metrics(search)
