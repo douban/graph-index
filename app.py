@@ -12,7 +12,7 @@ from collections import defaultdict
 from bottle import route, template, static_file, request, redirect, default_app
 
 import config
-import models
+from models import Graph
 from suggested_queries import suggested_queries
 
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
@@ -73,7 +73,7 @@ logging.info('build diamond...')
 build_diamond()
 
 
-def find_metrics(search):
+def search_metrics(search):
     global metrics
     matched_metrics = []
     try:
@@ -86,12 +86,12 @@ def find_metrics(search):
     return matched_metrics
 
 def find_groupby(search, index):
-    matched_metrics = find_metrics(search)
+    matched_metrics = search_metrics(search)
     return [(g[0], list(g[1])) for g in itertools.groupby(sorted(matched_metrics, \
             key = lambda x:x.split('.')[int(index)]), \
             lambda x:x.split('.')[int(index)])]
 
-def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
+def do_plugin(plugin, server_regex):
     global diamond
     data = {}
     re_obj = re.compile(server_regex)
@@ -116,20 +116,14 @@ def get_plugins_paths():
 
 
 
+# web part
 def render_page(body, **kwargs):
     return str(template('templates/base', body = body, **kwargs))
 
 @route('/', method = 'GET')
-@route('/', method = 'POST')
 @route('/index', method = 'GET')
-@route('/index', method = 'POST')
 def index():
-    global diamond, suggested_queries
-    if request.method == 'POST':
-        search = request.forms.get('search', '')
-        if search.strip():
-            return redirect('/regex/?' + urlencode({'search':search}))
-    body = template('templates/index', diamond = diamond, suggested_queries = suggested_queries)
+    body = template('templates/index', **globals())
     return render_page(body)
 
 @route('/dashboard', method = 'GET')
@@ -159,10 +153,10 @@ def plugin(server = '', plugin = ''):
 
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
-    _metrics = ['target=%s' % m for m in metric_name.split(',')]
+    targets = metric_name.split(',')
     title = request.query.get('title', metric_name)
-    targets = '&'.join(_metrics)
-    body = template('templates/metric', targets=targets, title=title)
+    graph = Graph(targets, title = title)
+    body = template('templates/metric', **locals())
     return render_page(body)
 
 @route('/metrics/<metric_name>', method = 'GET')
@@ -170,38 +164,45 @@ def _metrics(*args, **kwargs):
     return metric(*args, **kwargs)
 
 @route('/regex/', method = 'GET')
+@route('/regex/', method = 'POST')
 def regex():
+    if request.method == 'POST':
+        search = request.forms.get('search', '')
+        return redirect('/regex/?' + urlencode({'search' : search}))
+
+    # GET, url will be like '/regex/?search=...'
     search = request.query.get('search', '')
     errors = []
     if search.strip() in ['.*', '.*?']:
         errors.append('are you kidding me?')
     elif ':' in search:
-        if search.startswith('plugin:'): # search == 'plugin:'
+        if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
             _, plugin, server_regex = search.strip().split(':', 2)
-            data = find_metrics_of_plugin_by_server_regex(plugin, server_regex)
+            data = do_plugin(plugin, server_regex)
             body = template('templates/plugin-regex', **locals())
         elif search.startswith('merge:'): # search == 'merge:'
             _, regex = search.strip().split(':', 1)
-            data = find_metrics(regex)
+            graph = Graph(targets =  search_metrics(regex), title = 'a merged graph')
             body = template('templates/merge', **locals())
     else: # search is common regex without any prefix
-        o = groupby_re.match(search)
-        if o:
-            data = find_groupby(**o.groupdict())
+        match = groupby_re.match(search)
+        if match:
+            graphs = [ Graph(targets, title = group) for group, targets \
+                in find_groupby(**match.groupdict()) ]
             body = template('templates/groupby', **locals())
         else:
-            data = find_metrics(search)
+            data = search_metrics(search)
             if len(data) == 0:
                 errors.append('no metric is matched')
-            body = template('templates/graph', **locals())
+            graphs = [ Graph(targets = [metric, ], title = metric) for metric in data ]
+            body = template('templates/list', **locals())
     if errors:
         body = template('templates/error', **locals())
     return render_page(body, search = search)
 
 @route('/debug', method = 'GET')
 def debug():
-    global diamond
-    global metrics
+    global diamond, metrics
     data = get_plugins_paths()
     body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
     return render_page(body, page = 'debug')

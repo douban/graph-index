@@ -27,7 +27,7 @@
 		% end
 	% end
             </ul>
-            <form class = 'navbar-search pull-right' action = '/' method = 'POST'>
+            <form class = 'navbar-search pull-right' action = '/regex/' method = 'POST'>
               <input id = 'search-box' type = 'text' class = 'search-query input-xlarge' name = 'search' placeholder = 'regular expression' value = "{{search}}"></input>
             </form>
           </div><!--/.nav-collapse -->
@@ -35,7 +35,7 @@
       </div>
     </div>
     <div id = 'container'>
-        {{!body}}
+    {{!body}}
     </div>
   </body>
 </html>

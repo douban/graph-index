@@ -1,5 +1,4 @@
 metrics.json
-config.py
 *.swp
 # Python
 *.py[cod]

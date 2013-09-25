@@ -1,23 +1,20 @@
-%import config
-% if targets:
 <div class = 'graph-row'>
     <table class = 'graph'>
         <tr>
             <td>
-                <img class = 'day' src = '{{config.graphite_url}}/render/?width=600&height=400&{{targets}}&&title={{title}} - day' />
+                <img class = 'day' src = '{{graph.day_url}}' />
             </td>
             <td>
-                <img class = 'week' src = '{{config.graphite_url}}/render/?width=600&height=400&{{targets}}&from=-7d&title={{title}} - week' />
+                <img class = 'week' src = '{{graph.week_url}}' />
             </td>
         </tr>
         <tr>
             <td>
-                <img class = 'month' src = '{{config.graphite_url}}/render/?width=600&height=400&{{targets}}&from=-30d&title={{title}} - month' />
+                <img class = 'month' src = '{{graph.month_url}}' />
             </td>
             <td>
-                <img class = 'year' src = '{{config.graphite_url}}/render/?width=600&height=400&{{targets}}&from=-365d&title={{title}} - year' />
+                <img class = 'year' src = '{{graph.year_url}}' />
             </td>
         </tr>
     </table>
 </div>
-% end

@@ -1,21 +1,15 @@
-%setdefault('data', None)
-%import config
-% if data:
-    % for group, metrics in data:
-        % target = '&'.join('target=' + m for m in metrics)
-        % metrics = ','.join(metrics)
+% for graph in graphs:
 <div class = "graph-row">
-    <h4><a href = "/metrics/{{metrics}}?title={{group}}" target="_blank">{{group}}</a></h4>
+    <h4><a href = "/metrics/{{','.join(graph.targets)}}?title={{graph.graph_args['title']}}" target="_blank">{{graph.graph_args['title']}}</a></h4>
     <table class = "graph">
         <tr>
             <td>
-                <img class = "day" src = "{{config.graphite_url}}/render/?width=600&height=400&{{target}}&title={{group}} - day&hideLegend=False" />
+                <img class = "day" src = "{{graph.day_url}}" />
             </td>
             <td>
-                <img class = "week" src = "{{config.graphite_url}}/render/?width=600&height=400&{{target}}&from=-7d&title={{group}} - week&hideLegend=False" />
+                <img class = "week" src = "{{graph.week_url}}" />
             </td>
         </tr>
     </table>
 </div>
-    % end
 % end
