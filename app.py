@@ -171,7 +171,7 @@ def regex():
     if request.method == 'POST':
         search = request.forms.get('search')
         if not search.strip():
-            errors.append('search can not be none')
+            errors.append('can not be none')
         else:
             return redirect('/regex/?' + urlencode({'search' : search}))
     elif request.method == 'GET':

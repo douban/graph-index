@@ -28,7 +28,7 @@
 	% end
             </ul>
             <form class = 'navbar-search pull-right' action = '/regex/' method = 'POST'>
-              <input id = 'search-box' type = 'text' class = 'search-query input-xlarge' name = 'search' placeholder = 'regular expression' value = "{{search}}"></input>
+              <input id = 'search-box' type = 'text' class = 'search-query input-xlarge' name = 'search' placeholder = 'search: regex, see /docs' value = "{{search}}"></input>
             </form>
           </div><!--/.nav-collapse -->
         </div>
