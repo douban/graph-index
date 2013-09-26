@@ -193,7 +193,9 @@ def regex():
             elif search.startswith('merge:'): # search == 'merge:'
                 _, regex = search.strip().split(':', 1)
                 title = request.query.get('title')
-                graph = Graph(targets =  search_metrics(regex), title = title or 'a merged graph')
+                targets = search_metrics(regex)
+                graph = Graph(targets, title = title or 'a merged graph')
+                graph.graph_args['height'] += len(targets) > 18 and len(targets) * 18 or 0
                 body = template('templates/graph', **locals())
         else: # search is common regex without any prefix
             match = groupby_re.match(search)
