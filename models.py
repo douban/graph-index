@@ -23,7 +23,7 @@ class Graph:
         if graph_args.has_key('_from'):
             graph_args['from'] = graph_args['_from']
             del graph_args['_from']
-        graph_args['height'] += len(self.targets) > 10 and len(self.targets) * 15 or 0
+        graph_args['height'] += len(self.targets) > 10 and len(self.targets) * 12 or 0
         return self.base_url + '&' + '&'.join('%s=%s' % (k, v) \
                 for k, v in graph_args.items())
 
