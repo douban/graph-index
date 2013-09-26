@@ -1,4 +1,5 @@
 metrics.json
+local_config.py
 *.swp
 # Python
 *.py[cod]
