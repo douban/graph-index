@@ -219,11 +219,11 @@ def docs():
     body = template('templates/docs')
     return render_page(body, page = 'docs')
 
-@route('<path:re:/favicon.ico>')
-@route('<path:re:/static/css/.*css>')
-@route('<path:re:/static/js/.*js>')
-@route('<path:re:/static/fonts/.*woff>')
-def static(path, method = 'GET'):
+@route('<path:re:/favicon.ico>', method = 'GET')
+@route('<path:re:/static/css/.*css>', method = 'GET')
+@route('<path:re:/static/js/.*js>', method = 'GET')
+@route('<path:re:/static/fonts/.*woff>', method = 'GET')
+def static(path):
     return static_file(path, root = '.')
 
 
