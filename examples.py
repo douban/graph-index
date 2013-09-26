@@ -5,5 +5,6 @@ examples = [
     'thorin.doubanmemcache.*11212 group by 3',
     'thorin.doubanmemcache.*11213 group by 3',
     'thorin.doubanmemcache.*11214 group by 3',
-    'thorin.beansmq group by 3'
+    'thorin.beansmq group by 3',
+    'thorin.iostat group by 3',
 ]
