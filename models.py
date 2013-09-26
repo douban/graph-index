@@ -15,6 +15,7 @@ class Graph:
             ('&'.join('target=%s' % t for t in self.targets))
         self.detail_url = None
         self.day_graph_need_shift = False
+        self.auto_refresh = False
 
     def full_url(self, **kwargs):
         graph_args = self.graph_args.copy()

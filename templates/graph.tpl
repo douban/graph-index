@@ -1,7 +1,7 @@
 <div class = 'graph-row'>
     <table class = 'graph'>
         <tr>
-            <td> <img class = 'day' src = '{{graph.day_graph_need_shift and graph.shift_url or graph.day_url}}' /> </td>
+            <td> <img class = '{{graph.auto_refresh and "day" or ""}}' src = '{{graph.day_graph_need_shift and graph.shift_url or graph.day_url}}' /> </td>
             <td> <img class = 'week' src = '{{graph.week_url}}' /> </td>
         </tr>
         <tr>

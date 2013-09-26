@@ -159,6 +159,7 @@ def plugin(server = '', plugin = ''):
 def metric(metric_name = ''):
     graph = Graph([metric_name, ])
     graph.day_graph_need_shift = True
+    graph.auto_refresh = True
     body = template('templates/graph', **locals())
     return render_page(body)
 
@@ -211,6 +212,7 @@ def regex():
                 for metric in data:
                     graph = Graph(targets = [metric, ], title = metric)
                     graph.detail_url = '/metric/%s' % metric
+                    graph.auto_refresh = True
                     graphs.append(graph)
                 body = template('templates/graph-list', **locals())
     if errors:
