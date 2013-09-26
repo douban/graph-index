@@ -3,7 +3,7 @@ import config
 class Graph:
 
     def __init__(self, targets, **kwargs):
-        assert(isinstance(targets, list))
+        assert(isinstance(targets, list)) # [metric, ...]
         self.targets = targets
         self.graph_args = dict( width = 600, height = 400, \
             _from = '-1d', hideLegend = 'False', )
