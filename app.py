@@ -100,7 +100,7 @@ def do_plugin(plugin, server_regex):
                 data[s] = diamond[s][plugin]
     return data
 
-def get_plugins_paths():
+def get_plugin_paths():
     global metrics
     data = defaultdict(dict) # dict is faster than set
     for m in metrics:
@@ -210,7 +210,7 @@ def regex():
 @route('/debug', method = 'GET')
 def debug():
     global diamond, metrics
-    data = get_plugins_paths()
+    data = get_plugin_paths()
     body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
     return render_page(body, page = 'debug')
 
