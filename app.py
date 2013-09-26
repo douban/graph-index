@@ -12,43 +12,68 @@ from collections import defaultdict
 from bottle import route, template, static_file, request, redirect, default_app
 
 import config
+from models import Graph
 from suggested_queries import suggested_queries
 
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
 diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
-bad_metric = [
+diamond_re_more = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>(network|iostat))\.(?P<more>[^\.]+)\..*$')
+bad_metrics = [
     re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
-diamond = None
+diamond = defaultdict(dict)
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
-def load_metrics():
-    url = config.graphite_url + '/metrics/index_all.json'
+def is_bad_metric(metric):
+    global bad_metrics
+    for r in bad_metrics:
+        if r.match(metric):
+            return True
+
+def build_metrics():
+    global metrics
     try:
         if os.path.exists(config.metrics_file) and config.debug:
             data = open(config.metrics_file).read()
         else:
-            data = urllib2.urlopen(url).read()
+            data = urllib2.urlopen(config.graphite_index_url).read()
         metrics = json.loads(data)
+        metrics = filter(lambda x: x.startswith('servers.') and \
+                    not is_bad_metric(x), metrics) # drop bad metrics
         if config.debug:
             open(config.metrics_file, 'w').write(json.dumps(metrics))
     except Exception, e:
         logging.warning(str(e))
         sys.exit(1)
-    return metrics
 
-metrics = load_metrics()
+def build_diamond():
+    global metrics, diamond
+    for metric in metrics:
+        matched = filter(lambda x: x is not None, \
+            map(lambda x: x.match(metric), [diamond_re_more, diamond_re]))
+        if matched:
+            match = matched[0].groupdict()
+        else:
+            continue
+        server = match.get('server')
+        plugin = match.get('plugin')
+        if match.has_key('more'):
+            plugin = plugin + '-' + match.get('more')
+        if not diamond[server].has_key(plugin):
+            diamond[server][plugin] = []
+        diamond[server][plugin].append(metric)
 
-def is_bad_metric(metric):
-    global bad_metric
-    for r in bad_metric:
-        if r.match(metric):
-            return True
+logging.info('build metrics...')
+build_metrics()
 
-def find_metrics(search):
+logging.info('build diamond...')
+build_diamond()
+
+
+def search_metrics(search):
     global metrics
     matched_metrics = []
     try:
@@ -60,13 +85,13 @@ def find_metrics(search):
             matched_metrics.append(m)
     return matched_metrics
 
-def find_groupby(search, index):
-    matched_metrics = find_metrics(search)
+def do_groupby(search, index):
+    matched_metrics = search_metrics(search)
     return [(g[0], list(g[1])) for g in itertools.groupby(sorted(matched_metrics, \
             key = lambda x:x.split('.')[int(index)]), \
             lambda x:x.split('.')[int(index)])]
 
-def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
+def do_plugin(plugin, server_regex):
     global diamond
     data = {}
     re_obj = re.compile(server_regex)
@@ -76,12 +101,10 @@ def find_metrics_of_plugin_by_server_regex(plugin, server_regex):
                 data[s] = diamond[s][plugin]
     return data
 
-def get_plugins_paths():
+def get_plugin_paths():
     global metrics
     data = defaultdict(dict) # dict is faster than set
     for m in metrics:
-        if is_bad_metric(m):
-            continue
         o = diamond_re.match(m)
         if o:
             d = o.groupdict()
@@ -91,40 +114,16 @@ def get_plugins_paths():
             data[plugin][path] = True
     return data
 
-def get_diamond():
-    global metrics
-    diamond = {}
-    for m in metrics:
-        if is_bad_metric(m):
-            continue
-        o = diamond_re.match(m)
-        if o:
-            d = o.groupdict()
-            if not diamond.has_key(d['server']):
-                diamond[d['server']] = {}
-            if not diamond[d['server']].has_key(d['plugin']):
-                diamond[d['server']][d['plugin']] = []
-            diamond[d['server']][d['plugin']].append(m)
-    return diamond
-
-diamond = get_diamond()
 
 
-
+# web part
 def render_page(body, **kwargs):
     return str(template('templates/base', body = body, **kwargs))
 
 @route('/', method = 'GET')
-@route('/', method = 'POST')
 @route('/index', method = 'GET')
-@route('/index', method = 'POST')
 def index():
-    global diamond, suggested_queries
-    if request.method == 'POST':
-        search = request.forms.get('search', '')
-        if search.strip():
-            return redirect('/regex/?' + urlencode({'search':search}))
-    body = template('templates/index', diamond = diamond, suggested_queries = suggested_queries)
+    body = template('templates/index', **globals())
     return render_page(body)
 
 @route('/dashboard', method = 'GET')
@@ -141,76 +140,103 @@ def dashboard():
 @route('/server/<server>', method = 'GET')
 def server(server = ''):
     global diamond
-    data = diamond[server]
-    body = template('templates/server', **locals())
+    graphs = []
+    for plugin in sorted(diamond[server].keys()):
+        graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
+        graph.tune_height(plugin)
+        graph.detail_url = '/server/%s/%s' % (server, plugin)
+        graphs.append(graph)
+    body = template('templates/graph-list', **locals())
     return render_page(body)
 
 @route('/server/<server>/<plugin>', method = 'GET')
 def plugin(server = '', plugin = ''):
     global diamond
-    data = diamond[server][plugin]
-    body = template('templates/plugin', **locals())
+    graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
+    graph.tune_height(plugin)
+    body = template('templates/graph', **locals())
     return render_page(body)
-
-@route('/debug', method = 'GET')
-def debug():
-    global diamond
-    global metrics
-    data = get_plugins_paths()
-    body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
-    return render_page(body, page = 'debug')
-
-@route('/docs', method = 'GET')
-def meta():
-    body = template('templates/docs')
-    return render_page(body, page = 'docs')
 
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
-    _metrics = ['target=%s' % m for m in metric_name.split(',')]
-    title = request.query.get('title', metric_name)
-    targets = '&'.join(_metrics)
-    body = template('templates/metric', targets=targets, title=title)
+    graph = Graph([metric_name, ])
+    graph.day_graph_need_shift = True
+    body = template('templates/graph', **locals())
     return render_page(body)
 
-@route('/metrics/<metric_name>', method = 'GET')
-def _metrics(*args, **kwargs):
-    return metric(*args, **kwargs)
-
 @route('/regex/', method = 'GET')
+@route('/regex/', method = 'POST')
 def regex():
-    search = request.query.get('search', '')
     errors = []
-    if search.strip() in ['.*', '.*?']:
-        errors.append('are you kidding me?')
-    elif ':' in search:
-        if search.startswith('plugin:'): # search == 'plugin:'
-            _, plugin, server_regex = search.strip().split(':', 2)
-            data = find_metrics_of_plugin_by_server_regex(plugin, server_regex)
-            body = template('templates/plugin-regex', **locals())
-        elif search.startswith('merge:'): # search == 'merge:'
-            _, regex = search.strip().split(':', 1)
-            data = find_metrics(regex)
-            body = template('templates/merge', **locals())
-    else: # search is common regex without any prefix
-        o = groupby_re.match(search)
-        if o:
-            data = find_groupby(**o.groupdict())
-            body = template('templates/groupby', **locals())
+    if request.method == 'POST':
+        search = request.forms.get('search')
+        if not search.strip():
+            errors.append('can not be none')
         else:
-            data = find_metrics(search)
-            if len(data) == 0:
-                errors.append('no metric is matched')
-            body = template('templates/graph', **locals())
+            return redirect('/regex/?' + urlencode({'search' : search}))
+    elif request.method == 'GET':
+        # url will be like '/regex/?search=...'
+        search = request.query.get('search', '')
+        if search.strip() in ['.*', '.*?']:
+            errors.append('are you kidding me?')
+        elif ':' in search:
+            if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
+                _, plugin, server_regex = search.strip().split(':', 2)
+                graphs = []
+                data = do_plugin(plugin, server_regex)
+                for server in sorted(data.keys()):
+                    graph = Graph(data[server], title = server + ' ' + plugin)
+                    graph.tune_height(plugin)
+                    graph.detail_url = '/server/%s/%s' % (server, plugin)
+                    graphs.append(graph)
+                body = template('templates/graph-list', **locals())
+            elif search.startswith('merge:'): # search == 'merge:'
+                _, regex = search.strip().split(':', 1)
+                title = request.query.get('title')
+                targets = search_metrics(regex)
+                graph = Graph(targets, title = title or 'a merged graph')
+                graph.graph_args['height'] += len(targets) > 18 and len(targets) * 18 or 0
+                body = template('templates/graph', **locals())
+        else: # search is common regex without any prefix
+            match = groupby_re.match(search)
+            if match:
+                graphs = []
+                for group, targets in do_groupby(**match.groupdict()):
+                    graph = Graph(targets, title = group)
+                    graph.detail_url = '/regex/?search=merge:^(%s)$&title=%s' % ('|'.join(graph.targets), group)
+                    graphs.append(graph)
+                body = template('templates/graph-list', **locals())
+            else:
+                data = search_metrics(search)
+                if len(data) == 0:
+                    errors.append('no metric is matched')
+                graphs = []
+                for metric in data:
+                    graph = Graph(targets = [metric, ], title = metric)
+                    graph.detail_url = '/metric/%s' % metric
+                    graphs.append(graph)
+                body = template('templates/graph-list', **locals())
     if errors:
         body = template('templates/error', **locals())
     return render_page(body, search = search)
 
-@route('<path:re:/favicon.ico>')
-@route('<path:re:/static/css/.*css>')
-@route('<path:re:/static/js/.*js>')
-@route('<path:re:/static/fonts/.*woff>')
-def static(path, method = 'GET'):
+@route('/debug', method = 'GET')
+def debug():
+    global diamond, metrics
+    data = get_plugin_paths()
+    body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
+    return render_page(body, page = 'debug')
+
+@route('/docs', method = 'GET')
+def docs():
+    body = template('templates/docs')
+    return render_page(body, page = 'docs')
+
+@route('<path:re:/favicon.ico>', method = 'GET')
+@route('<path:re:/static/css/.*css>', method = 'GET')
+@route('<path:re:/static/js/.*js>', method = 'GET')
+@route('<path:re:/static/fonts/.*woff>', method = 'GET')
+def static(path):
     return static_file(path, root = '.')
 
 

@@ -1,6 +1,6 @@
 % setdefault('suggested_queries', [])
 % from urllib import urlencode
-<div id = 'sidebar' class = 'well span4'>
+<div id = 'sidebar' class = 'well span5'>
     <span class = 'nav-header'>suggested queries</span>
     <ul class = 'nav nav-list'>
     % for q in suggested_queries:
