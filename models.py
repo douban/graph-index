@@ -11,11 +11,10 @@ class Graph:
         if not self.graph_args.has_key('title'): # self.graph_args['title'] stores the real title
             self.graph_args['title'] = ','.join(self.targets)
         self.origin_title = self.graph_args['title'] # self.origin_title origin title passed by kwargs
-
-    @property
-    def base_url(self):
-        return config.graphite_url + '/render/?%s' % \
+        self.base_url = config.graphite_url + '/render/?%s' % \
             ('&'.join('target=%s' % t for t in self.targets))
+        self.detail_url = None
+        self.day_graph_need_shift = False
 
     def full_url(self, **graph_args):
         self.graph_args.update(graph_args)
@@ -48,6 +47,6 @@ class Graph:
             (self.targets[0], shift, shift)
         
     def tune_height(self, plugin):
-        for k, v in config.graph_height.items():
-            if k in plugin:
-                self.graph_args['height'] = v
+        for plugin_prefix, height in config.graph_height.items():
+            if plugin.startswith(plugin_prefix):
+                self.graph_args['height'] = height

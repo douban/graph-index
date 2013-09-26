@@ -142,17 +142,19 @@ def server(server = ''):
     global diamond
     graphs = []
     for plugin in sorted(diamond[server].keys()):
-        graphs.append(Graph(diamond[server][plugin], title = server + ' ' + plugin))
-    body = template('templates/plugin-multi', **locals())
+        graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
+        graph.tune_height(plugin)
+        graph.detail_url = '/server/%s/%s' % (server, plugin)
+        graphs.append(graph)
+    body = template('templates/graph-list', **locals())
     return render_page(body)
 
 @route('/server/<server>/<plugin>', method = 'GET')
 def plugin(server = '', plugin = ''):
     global diamond
     graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
-    graph.graph_args['height'] = 400
     graph.tune_height(plugin)
-    body = template('templates/plugin', **locals())
+    body = template('templates/graph', **locals())
     return render_page(body)
 
 @route('/metric/<metric_name>', method = 'GET')
@@ -160,7 +162,8 @@ def metric(metric_name = ''):
     targets = metric_name.split(',')
     title = request.query.get('title', metric_name)
     graph = Graph(targets, title = title)
-    body = template('templates/metric', **locals())
+    graph.day_graph_need_shift = len(targets) == 1 and True or False
+    body = template('templates/graph', **locals())
     return render_page(body)
 
 @route('/metrics/<metric_name>', method = 'GET')
@@ -190,12 +193,13 @@ def regex():
                 for server in sorted(data.keys()):
                     graph = Graph(data[server], title = server + ' ' + plugin)
                     graph.tune_height(plugin)
+                    graph.detail_url = '/server/%s/%s' % (server, plugin)
                     graphs.append(graph)
-                body = template('templates/plugin-multi', **locals())
+                body = template('templates/graph-list', **locals())
             elif search.startswith('merge:'): # search == 'merge:'
                 _, regex = search.strip().split(':', 1)
                 graph = Graph(targets =  search_metrics(regex), title = 'a merged graph')
-                body = template('templates/merge', **locals())
+                body = template('templates/graph', **locals())
         else: # search is common regex without any prefix
             match = groupby_re.match(search)
             if match:
@@ -206,8 +210,12 @@ def regex():
                 data = search_metrics(search)
                 if len(data) == 0:
                     errors.append('no metric is matched')
-                graphs = [ Graph(targets = [metric, ], title = metric) for metric in data ]
-                body = template('templates/list', **locals())
+                graphs = []
+                for metric in data:
+                    graph = Graph(targets = [metric, ], title = metric)
+                    graph.detail_url = '/metric/%s' % metric
+                    graphs.append(graph)
+                body = template('templates/graph-list', **locals())
     if errors:
         body = template('templates/error', **locals())
     return render_page(body, search = search)
