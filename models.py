@@ -47,3 +47,7 @@ class Graph:
         return self.full_url() + '&target=alias(dashed(timeShift(%s,"%s")),"%s ago")' % \
             (self.targets[0], shift, shift)
         
+    def tune_height(self, plugin):
+        for k, v in config.graph_height.items():
+            if k in plugin:
+                self.graph_args['height'] = v

@@ -72,6 +72,7 @@ build_metrics()
 logging.info('build diamond...')
 build_diamond()
 
+
 def search_metrics(search):
     global metrics
     matched_metrics = []
@@ -149,6 +150,8 @@ def server(server = ''):
 def plugin(server = '', plugin = ''):
     global diamond
     graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
+    graph.graph_args['height'] = 400
+    graph.tune_height(plugin)
     body = template('templates/plugin', **locals())
     return render_page(body)
 
@@ -185,7 +188,9 @@ def regex():
                 graphs = []
                 data = do_plugin(plugin, server_regex)
                 for server in sorted(data.keys()):
-                    graphs.append(Graph(data[server], title = server + ' ' + plugin))
+                    graph = Graph(data[server], title = server + ' ' + plugin)
+                    graph.tune_height(plugin)
+                    graphs.append(graph)
                 body = template('templates/plugin-multi', **locals())
             elif search.startswith('merge:'): # search == 'merge:'
                 _, regex = search.strip().split(':', 1)
