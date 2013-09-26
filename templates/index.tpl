@@ -23,6 +23,7 @@
                 goto <a href = '/debug'><strong>/debug</strong></a> to see more details about each plugin 
             </p>
         </li>
+        <li class = 'divider' />
     </ul>
     <ul class = 'nav nav-list'>
         <li><span class = 'nav-header'>tags</span></li>
@@ -31,7 +32,6 @@
             <span class = 'label label-disable'>{{tag}}</span>
         % end
         </li>
-        <li class = 'divider' />
     </ul>
 </div>
 <div id = 'index' class = 'span10'>
