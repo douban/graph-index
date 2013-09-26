@@ -13,7 +13,7 @@ from bottle import route, template, static_file, request, redirect, default_app
 
 import config
 from models import Graph
-from suggested_queries import suggested_queries
+from examples import examples
 
 logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
 
@@ -24,6 +24,7 @@ bad_metrics = [
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
+tags = defaultdict(dict)
 diamond = defaultdict(dict)
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
@@ -66,11 +67,22 @@ def build_diamond():
             diamond[server][plugin] = []
         diamond[server][plugin].append(metric)
 
+def build_tags():
+    global metrics, tags
+    tags = defaultdict(dict) # dict is faster than set
+    for metric in metrics:
+        for tag in metric.split('.')[2:]:
+            tags[tag] = True
+    return tags
+
 logging.info('build metrics...')
 build_metrics()
 
 logging.info('build diamond...')
 build_diamond()
+
+logging.info('build tags...')
+build_tags()
 
 
 def search_metrics(search):
@@ -224,11 +236,6 @@ def debug():
     data = get_plugin_paths()
     body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
     return render_page(body, page = 'debug')
-
-@route('/docs', method = 'GET')
-def docs():
-    body = template('templates/docs')
-    return render_page(body, page = 'docs')
 
 @route('<path:re:/favicon.ico>', method = 'GET')
 @route('<path:re:/static/css/.*css>', method = 'GET')

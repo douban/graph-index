@@ -1,4 +1,4 @@
-suggested_queries = [
+examples = [
     'dba1.mysql.*\.select group by 3',
     'thorin.beansdb group by 4',
     'thorin.doubanmemcache.*11211 group by 3',

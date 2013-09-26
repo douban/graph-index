@@ -45,18 +45,17 @@ span.plugin {
     float: left;
 }
 
-#docs {
-    float: left;
-    min-height: 600px;
-    border-right: 1px solid #222;
-}
-
 span.grammar {
     font-weight: bold;
     color: white;
 }
 
-#about {
-    float: left;
-    padding-left: 50px;
+#tags {
+    line-height: 1.6em;
+}
+
+span.tag {
+    padding: 1px;
+    margin: 2px;
+    border: 1px solid #aaa;
 }
