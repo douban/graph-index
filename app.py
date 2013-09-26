@@ -159,16 +159,10 @@ def plugin(server = '', plugin = ''):
 
 @route('/metric/<metric_name>', method = 'GET')
 def metric(metric_name = ''):
-    targets = metric_name.split(',')
-    title = request.query.get('title', metric_name)
-    graph = Graph(targets, title = title)
-    graph.day_graph_need_shift = len(targets) == 1 and True or False
+    graph = Graph([metric_name, ])
+    graph.day_graph_need_shift = True
     body = template('templates/graph', **locals())
     return render_page(body)
-
-@route('/metrics/<metric_name>', method = 'GET')
-def _metrics(*args, **kwargs):
-    return metric(*args, **kwargs)
 
 @route('/regex/', method = 'GET')
 @route('/regex/', method = 'POST')
@@ -198,7 +192,8 @@ def regex():
                 body = template('templates/graph-list', **locals())
             elif search.startswith('merge:'): # search == 'merge:'
                 _, regex = search.strip().split(':', 1)
-                graph = Graph(targets =  search_metrics(regex), title = 'a merged graph')
+                title = request.query.get('title')
+                graph = Graph(targets =  search_metrics(regex), title = title or 'a merged graph')
                 body = template('templates/graph', **locals())
         else: # search is common regex without any prefix
             match = groupby_re.match(search)
@@ -206,7 +201,7 @@ def regex():
                 graphs = []
                 for group, targets in do_groupby(**match.groupdict()):
                     graph = Graph(targets, title = group)
-                    graph.detail_url = '/metrics/%s?title=%s' % (','.join(graph.targets), group)
+                    graph.detail_url = '/regex/?search=merge:^(%s)$&title=%s' % ('|'.join(graph.targets), group)
                     graph.detail_name = group
                     graphs.append(graph)
                 body = template('templates/graph-list', **locals())
