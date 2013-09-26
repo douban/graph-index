@@ -204,7 +204,6 @@ def regex():
                 for group, targets in do_groupby(**match.groupdict()):
                     graph = Graph(targets, title = group)
                     graph.detail_url = '/regex/?search=merge:^(%s)$&title=%s' % ('|'.join(graph.targets), group)
-                    graph.detail_name = group
                     graphs.append(graph)
                 body = template('templates/graph-list', **locals())
             else:
