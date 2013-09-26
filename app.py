@@ -143,7 +143,6 @@ def server(server = ''):
     graphs = []
     for plugin in sorted(diamond[server].keys()):
         graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
-        graph.tune_height(plugin)
         graph.detail_url = '/server/%s/%s' % (server, plugin)
         graphs.append(graph)
     body = template('templates/graph-list', **locals())
@@ -153,7 +152,6 @@ def server(server = ''):
 def plugin(server = '', plugin = ''):
     global diamond
     graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
-    graph.tune_height(plugin)
     body = template('templates/graph', **locals())
     return render_page(body)
 
@@ -186,7 +184,6 @@ def regex():
                 data = do_plugin(plugin, server_regex)
                 for server in sorted(data.keys()):
                     graph = Graph(data[server], title = server + ' ' + plugin)
-                    graph.tune_height(plugin)
                     graph.detail_url = '/server/%s/%s' % (server, plugin)
                     graphs.append(graph)
                 body = template('templates/graph-list', **locals())

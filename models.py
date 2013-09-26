@@ -10,35 +10,37 @@ class Graph:
         self.graph_args.update(kwargs)
         if not self.graph_args.has_key('title'): # self.graph_args['title'] stores the real title
             self.graph_args['title'] = ','.join(self.targets)
-        self.origin_title = self.graph_args['title'] # self.origin_title origin title passed by kwargs
+        self.title = self.graph_args['title'] # self.title origin title passed by kwargs
         self.base_url = config.graphite_url + '/render/?%s' % \
             ('&'.join('target=%s' % t for t in self.targets))
         self.detail_url = None
         self.day_graph_need_shift = False
 
-    def full_url(self, **graph_args):
-        self.graph_args.update(graph_args)
+    def full_url(self, **kwargs):
+        graph_args = self.graph_args.copy()
+        graph_args.update(kwargs)
         if graph_args.has_key('_from'):
-            self.graph_args['from'] = graph_args['_from']
-            del self.graph_args['_from']
+            graph_args['from'] = graph_args['_from']
+            del graph_args['_from']
+        graph_args['height'] += len(self.targets) > 10 and len(self.targets) * 15 or 0
         return self.base_url + '&' + '&'.join('%s=%s' % (k, v) \
-                for k, v in self.graph_args.items())
+                for k, v in graph_args.items())
 
     @property
     def day_url(self):
-        return self.full_url(title = self.origin_title + ' - day')
+        return self.full_url(title = self.title + ' - day')
 
     @property
     def week_url(self):
-        return self.full_url(title = self.origin_title + ' - week',  _from = '-7d')
+        return self.full_url(title = self.title + ' - week',  _from = '-7d')
 
     @property
     def month_url(self):
-        return self.full_url(title = self.origin_title + ' - month',  _from = '-30d')
+        return self.full_url(title = self.title + ' - month',  _from = '-30d')
 
     @property
     def year_url(self):
-        return self.full_url(title = self.origin_title + ' - year', _from = '-365d')
+        return self.full_url(title = self.title + ' - year', _from = '-365d')
 
     @property
     def shift_url(self, shift = '7d'):
@@ -46,7 +48,3 @@ class Graph:
         return self.full_url() + '&target=alias(dashed(timeShift(%s,"%s")),"%s ago")' % \
             (self.targets[0], shift, shift)
         
-    def tune_height(self, plugin):
-        for plugin_prefix, height in config.graph_height.items():
-            if plugin.startswith(plugin_prefix):
-                self.graph_args['height'] = height
