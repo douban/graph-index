@@ -203,9 +203,13 @@ def regex():
         else: # search is common regex without any prefix
             match = groupby_re.match(search)
             if match:
-                graphs = [ Graph(targets, title = group) for group, targets \
-                    in do_groupby(**match.groupdict()) ]
-                body = template('templates/groupby', **locals())
+                graphs = []
+                for group, targets in do_groupby(**match.groupdict()):
+                    graph = Graph(targets, title = group)
+                    graph.detail_url = '/metrics/%s?title=%s' % (','.join(graph.targets), group)
+                    graph.detail_name = group
+                    graphs.append(graph)
+                body = template('templates/graph-list', **locals())
             else:
                 data = search_metrics(search)
                 if len(data) == 0:
