@@ -24,6 +24,7 @@
             </p>
         </li>
         <li class = 'divider' />
+        <li><a href = 'https://github.com/huoxy/graph-index'>fork me</a></li>
     </ul>
 </div>
 <div id = 'index' class = 'span10'>
