@@ -41,8 +41,7 @@ def build_metrics():
         else:
             data = urllib2.urlopen(config.graphite_index_url).read()
         metrics = json.loads(data)
-        metrics = filter(lambda x: x.startswith('servers.') and \
-                    not is_bad_metric(x), metrics) # drop bad metrics
+        metrics = filter(lambda x: not is_bad_metric(x), metrics) # drop bad metrics
         if config.debug:
             open(config.metrics_file, 'w').write(json.dumps(metrics))
     except Exception, e:
