@@ -25,9 +25,6 @@
         </li>
         <li class = 'divider' />
     </ul>
-    <div id = 'forkme'>
-        <a class = 'pull-right' href = 'https://github.com/huoxy/graph-index'>fork me</a>
-    </div>
 </div>
 <div id = 'index' class = 'span10'>
     <div class = 'row'>

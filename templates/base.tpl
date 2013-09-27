@@ -16,7 +16,7 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="brand" href="/">Graph Index</a>
+          <a class="brand" href="https://github.com/huoxy/graph-index">Graph Index</a>
           <div class="nav-collapse">
             <ul class="nav">
 	% for (key, title) in [('index', 'Home'), ('dashboard', 'Dashboard'), ('debug', 'Debug'), ]:
