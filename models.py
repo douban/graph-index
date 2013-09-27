@@ -14,6 +14,7 @@ class Graph:
         self.base_url = config.graphite_url + '/render/?%s' % \
             ('&'.join('target=%s' % t for t in self.targets))
         self.detail_url = None
+        self.detail_title = None
         self.day_graph_need_shift = False
         self.auto_refresh = False
 

@@ -24,8 +24,10 @@
             </p>
         </li>
         <li class = 'divider' />
-        <li><a href = 'https://github.com/huoxy/graph-index'>fork me</a></li>
     </ul>
+    <div id = 'forkme'>
+        <a class = 'pull-right' href = 'https://github.com/huoxy/graph-index'>fork me</a>
+    </div>
 </div>
 <div id = 'index' class = 'span10'>
     <div class = 'row'>
