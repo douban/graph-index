@@ -24,7 +24,6 @@ bad_metrics = [
     re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
     re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
 ]
-tags = defaultdict(dict)
 diamond = defaultdict(dict)
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
@@ -67,22 +66,11 @@ def build_diamond():
             diamond[server][plugin] = []
         diamond[server][plugin].append(metric)
 
-def build_tags():
-    global metrics, tags
-    tags = defaultdict(dict) # dict is faster than set
-    for metric in metrics:
-        for tag in metric.split('.')[2:]:
-            tags[tag] = True
-    return tags
-
 logging.info('build metrics...')
 build_metrics()
 
 logging.info('build diamond...')
 build_diamond()
-
-logging.info('build tags...')
-build_tags()
 
 
 def search_metrics(search):

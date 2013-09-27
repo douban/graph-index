@@ -25,14 +25,6 @@
         </li>
         <li class = 'divider' />
     </ul>
-    <ul class = 'nav nav-list'>
-        <li><span class = 'nav-header'>tags</span></li>
-        <li id = 'tags'>
-        % for tag in tags.keys():
-            <span class = 'label label-disable'>{{tag}}</span>
-        % end
-        </li>
-    </ul>
 </div>
 <div id = 'index' class = 'span10'>
     <div class = 'row'>
