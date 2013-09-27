@@ -50,12 +50,3 @@ span.grammar {
     color: white;
 }
 
-#tags {
-    line-height: 1.6em;
-}
-
-span.tag {
-    padding: 1px;
-    margin: 2px;
-    border: 1px solid #aaa;
-}
