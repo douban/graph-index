@@ -23,7 +23,6 @@
                 goto <a href = '/debug'><strong>/debug</strong></a> to see more details about each plugin 
             </p>
         </li>
-        <li class = 'divider' />
     </ul>
 </div>
 <div id = 'index' class = 'span10'>
