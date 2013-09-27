@@ -100,19 +100,6 @@ def do_plugin(plugin, server_regex):
                 data[s] = diamond[s][plugin]
     return data
 
-def get_plugin_paths():
-    global metrics
-    data = defaultdict(dict) # dict is faster than set
-    for m in metrics:
-        o = diamond_re.match(m)
-        if o:
-            d = o.groupdict()
-            server = d.get('server')
-            plugin = d.get('plugin')
-            path = m[len('servers.%s.%s.' % (server, plugin)):]
-            data[plugin][path] = True
-    return data
-
 
 
 # web part
@@ -220,8 +207,19 @@ def regex():
 @route('/debug', method = 'GET')
 def debug():
     global diamond, metrics
-    data = get_plugin_paths()
-    body = template('templates/debug', data = data, diamond = diamond, metrics = metrics)
+    plugins = defaultdict(dict) # dict is faster than set
+    plugins_num = len(set(reduce(lambda x,y:x+y, [diamond[server].keys() \
+        for server in diamond.keys()])))
+    metrics_num = len(metrics)
+    for metric in metrics:
+        match_obj = diamond_re.match(metric)
+        if match_obj:
+            match = match_obj.groupdict()
+            server = match.get('server')
+            plugin = match.get('plugin')
+            path = metric[len('servers.%s.%s.' % (server, plugin)):]
+            plugins[plugin][path] = True
+    body = template('templates/debug', **locals())
     return render_page(body, page = 'debug')
 
 @route('<path:re:/favicon.ico>', method = 'GET')
