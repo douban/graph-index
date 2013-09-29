@@ -117,7 +117,7 @@ def dashboard():
     global diamond
     plugins = defaultdict(dict)
     for server in diamond.keys():
-        prefix  = re.sub('\d+$', '', server)
+        prefix = re.sub('\d+$', '', server)
         for plugin in diamond[server].keys():
             plugins[plugin][prefix] = True # dict is faster than set
     body = template('templates/dashboard', **locals())
@@ -130,6 +130,7 @@ def server(server = ''):
     for plugin in sorted(diamond[server].keys()):
         graph = Graph(diamond[server][plugin], title = server + ' ' + plugin)
         graph.detail_url = '/server/%s/%s' % (server, plugin)
+        graph.detail_title = plugin
         graphs.append(graph)
     body = template('templates/graph-list', **locals())
     return render_page(body)
