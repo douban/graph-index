@@ -5,6 +5,12 @@ index of diamond
  * some pre-defined dashboard
  * easily hack and a few lines of code
 
+# Screenshot
+
+![Screenshot](https://raw.github.com/huoxy/graph-index/master/static/image/graph-index.png)
+![Screenshot](https://raw.github.com/huoxy/graph-index/master/static/image/graph-index-server.png)
+![Screenshot](https://raw.github.com/huoxy/graph-index/master/static/image/graph-index-plugin.png)
+
 #Running
 
 ```shell

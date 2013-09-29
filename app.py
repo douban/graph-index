@@ -199,6 +199,7 @@ def regex():
                 for metric in data:
                     graph = Graph(targets = [metric, ], title = metric)
                     graph.detail_url = '/metric/%s' % metric
+                    graph.detail_title = metric
                     graph.auto_refresh = True
                     graphs.append(graph)
                 body = template('templates/graph-list', **locals())
