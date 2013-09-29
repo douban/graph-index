@@ -116,10 +116,10 @@ def index():
 def dashboard():
     global diamond
     plugins = defaultdict(dict)
-    for s in diamond.keys():
-        prefix  = re.sub('\d+$', '', s)
-        for p in diamond[s].keys():
-            plugins[p][prefix] = True # dict is faster than set
+    for server in diamond.keys():
+        prefix  = re.sub('\d+$', '', server)
+        for plugin in diamond[server].keys():
+            plugins[plugin][prefix] = True # dict is faster than set
     body = template('templates/dashboard', **locals())
     return render_page(body, page = 'dashboard')
 
