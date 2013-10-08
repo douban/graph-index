@@ -20,9 +20,12 @@
         <li>
             <span class = 'nav-header'>help</span>
             <p>
-                goto <a href = '/debug'><strong>/debug</strong></a> to see more details about each plugin 
+                goto <a href = '/debug'><strong>/debug</strong></a> to see more details about each plugin,
+                <br />
+                you can also <a href = 'https://github.com/huoxy/graph-index'>fork me</a> @github.
             </p>
         </li>
+        <li class = 'divider' />
     </ul>
 </div>
 <div id = 'index' class = 'span10'>
