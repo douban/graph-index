@@ -181,6 +181,12 @@ def regex():
                 targets = search_metrics(regex)
                 graph = Graph(targets, title = title or 'a merged graph')
                 body = template('templates/graph', **locals())
+            elif search.startswith('sum:'): # search == 'merge:'
+                _, regex = search.strip().split(':', 1)
+                targets = search_metrics(regex)
+                targets = ['sumSeries(%s)' % (','.join(targets)), ]
+                graph = Graph(targets, title = 'a sum-ed graph')
+                body = template('templates/graph', **locals())
         else: # search is common regex without any prefix
             match = groupby_re.match(search)
             if match:
