@@ -165,7 +165,7 @@ def regex():
         search = request.query.get('search', '')
         if search.strip() in ['.*', '.*?']:
             errors.append('are you kidding me?')
-        elif ':' in search:
+        elif ':' in search: # search is started with prefix
             if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
                 _, plugin, server_regex = search.strip().split(':', 2)
                 graphs = []
