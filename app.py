@@ -60,7 +60,7 @@ def build_diamond():
         server = match.get('server')
         plugin = match.get('plugin')
         if match.has_key('more'):
-            plugin = plugin + '-' + match.get('more')
+            plugin = plugin + '.' + match.get('more')
         if not diamond[server].has_key(plugin):
             diamond[server][plugin] = []
         diamond[server][plugin].append(metric)
