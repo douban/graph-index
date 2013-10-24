@@ -2,105 +2,31 @@
 
 import os
 import re
-import sys
 import json
-import urllib2
-import logging
-import itertools
+import pickle
 from urllib import urlencode
 from collections import defaultdict
-from bottle import route, template, static_file, request, redirect, default_app
+from bottle import route, template, static_file, request, redirect, default_app, hook
 
 import config
 from models import Graph
 from examples import examples
-
-logging.basicConfig(format = '%(asctime)-15s %(message)s', level = logging.DEBUG)
-
-diamond_re = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>[^\.]+)\..*$')
-diamond_re_more = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>(network|iostat))\.(?P<more>[^\.]+)\..*$')
-bad_metrics = [
-    re.compile('^servers\.[^\.]+\.memory\.Vmalloc.*$'),
-    re.compile('^servers\.[^\.]+\.processresources\.[^\.]+\.vms$'),
-    re.compile('^servers\.[^\.]+\.cpu\.total\.idle$'),
-]
-diamond = defaultdict(dict)
-groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
-
-def is_bad_metric(metric):
-    global bad_metrics
-    for r in bad_metrics:
-        if r.match(metric):
-            return True
-
-def build_metrics():
-    global metrics
-    try:
-        if os.path.exists(config.metrics_file) and config.debug:
-            data = open(config.metrics_file).read()
-        else:
-            data = urllib2.urlopen(config.graphite_index_url).read()
-        metrics = json.loads(data)
-        metrics = filter(lambda x: not is_bad_metric(x), metrics) # drop bad metrics
-        if config.debug:
-            open(config.metrics_file, 'w').write(json.dumps(metrics))
-    except Exception, e:
-        logging.warning(str(e))
-        sys.exit(1)
-
-def build_diamond():
-    global metrics, diamond
-    for metric in metrics:
-        matched = filter(lambda x: x is not None, \
-            map(lambda x: x.match(metric), [diamond_re_more, diamond_re]))
-        if matched:
-            match = matched[0].groupdict()
-        else:
-            continue
-        server = match.get('server')
-        plugin = match.get('plugin')
-        if match.has_key('more'):
-            plugin = plugin + '.' + match.get('more')
-        if not diamond[server].has_key(plugin):
-            diamond[server][plugin] = []
-        diamond[server][plugin].append(metric)
+from utils import logging, build_metrics, build_diamond, groupby_re
 
 logging.info('build metrics...')
-build_metrics()
+metrics = build_metrics()
 
 logging.info('build diamond...')
-build_diamond()
+diamond = build_diamond(metrics)
 
+metrics_version = os.path.getmtime(config.metrics_file)
 
-def search_metrics(search):
-    global metrics
-    matched_metrics = []
-    try:
-        re_obj = re.compile(search, re.IGNORECASE)
-    except:
-        return None
-    for m in metrics:
-        if re_obj.search(m):
-            matched_metrics.append(m)
-    return matched_metrics
-
-def do_groupby(search, index):
-    matched_metrics = search_metrics(search)
-    return [(g[0], list(g[1])) for g in itertools.groupby(sorted(matched_metrics, \
-            key = lambda x:x.split('.')[int(index)]), \
-            lambda x:x.split('.')[int(index)])]
-
-def do_plugin(plugin, server_regex):
-    global diamond
-    data = {}
-    re_obj = re.compile(server_regex)
-    for s in diamond.keys():
-        if re_obj.match(s):
-            if diamond[s].has_key(plugin):
-                data[s] = diamond[s][plugin]
-    return data
-
-
+@hook('before_request')
+def check_metrics():
+    global metrics, diamond, metrics_version
+    if os.path.getmtime(config.metrics_file) > metrics_version:
+        metrics = json.loads(open(config.metrics_file).read())
+        diamond = pickle.loads(open(config.diamond_cache).read())
 
 # web part
 def render_page(body, **kwargs):
@@ -153,6 +79,7 @@ def metric(metric_name = ''):
 @route('/regex/', method = 'GET')
 @route('/regex/', method = 'POST')
 def regex():
+    global metrics, diamond
     errors = []
     if request.method == 'POST':
         search = request.forms.get('search')
@@ -169,7 +96,7 @@ def regex():
             if search.startswith('plugin:'): # search == 'plugin:<plugin>:<server_regex>'
                 _, plugin, server_regex = search.strip().split(':', 2)
                 graphs = []
-                data = do_plugin(plugin, server_regex)
+                data = do_plugin(diamond, plugin, server_regex)
                 for server in sorted(data.keys()):
                     graph = Graph(data[server], title = server + ' ' + plugin)
                     graph.detail_url = '/server/%s/%s' % (server, plugin)
@@ -178,26 +105,26 @@ def regex():
             elif search.startswith('merge:'): # search == 'merge:'
                 _, regex = search.strip().split(':', 1)
                 title = request.query.get('title')
-                targets = search_metrics(regex)
+                targets = search_metrics(metrics, regex)
                 graph = Graph(targets, title = title or 'a merged graph')
                 body = template('templates/graph', **locals())
             elif search.startswith('sum:'): # search == 'merge:'
                 _, regex = search.strip().split(':', 1)
-                targets = search_metrics(regex)
+                targets = search_metrics(metrics, regex)
                 graph = Graph(['sumSeries(%s)' % (','.join(targets)), ], title = 'a sum-ed graph')
                 body = template('templates/graph', **locals())
         else: # search is common regex without any prefix
             match = groupby_re.match(search)
             if match:
                 graphs = []
-                for group, targets in do_groupby(**match.groupdict()):
+                for group, targets in do_groupby(metrics, **match.groupdict()):
                     graph = Graph(targets, title = group)
                     graph.detail_url = '/regex/?search=merge:^(%s)$&title=%s' % ('|'.join(graph.targets), group)
                     graph.detail_title = group
                     graphs.append(graph)
                 body = template('templates/graph-list', **locals())
             else:
-                data = search_metrics(search)
+                data = search_metrics(metrics, search)
                 if len(data) == 0:
                     errors.append('no metric is matched')
                 graphs = []

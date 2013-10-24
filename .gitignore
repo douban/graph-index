@@ -1,4 +1,5 @@
 metrics.json
+diamond.cache
 local_config.py
 *.swp
 # Python
