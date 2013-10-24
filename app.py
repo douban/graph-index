@@ -11,7 +11,7 @@ from bottle import route, template, static_file, request, redirect, default_app,
 import config
 from models import Graph
 from examples import examples
-from utils import logging, build_metrics, build_diamond, groupby_re, do_plugin, do_groupby
+from utils import logging, build_metrics, build_diamond, groupby_re, do_plugin, do_groupby, search_metrics
 
 metrics = diamond = None
 
