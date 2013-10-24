@@ -11,22 +11,20 @@ from bottle import route, template, static_file, request, redirect, default_app,
 import config
 from models import Graph
 from examples import examples
-from utils import logging, build_metrics, build_diamond, groupby_re
+from utils import logging, build_metrics, build_diamond, groupby_re, do_plugin, do_groupby
 
-logging.info('build metrics...')
-metrics = build_metrics()
+metrics = diamond = None
 
-logging.info('build diamond...')
-diamond = build_diamond(metrics)
-
-metrics_version = os.path.getmtime(config.metrics_file)
+metrics_version = 0
 
 @hook('before_request')
 def check_metrics():
     global metrics, diamond, metrics_version
-    if os.path.getmtime(config.metrics_file) > metrics_version:
+    metrics_now = os.path.getmtime(config.metrics_file)
+    if metrics_now > metrics_version:
         metrics = json.loads(open(config.metrics_file).read())
         diamond = pickle.loads(open(config.diamond_cache).read())
+        metrics_version = metrics_now
 
 # web part
 def render_page(body, **kwargs):
