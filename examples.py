@@ -1,6 +1,6 @@
 examples = [
     'dba1.mysql.*\.select group by 3',
-    'plugin:network-lan:baggins',
+    'plugin:network.lan:baggins',
     'thorin.iostat group by 3',
     'bandwidth.*(in|out)',
     'beansdb group by 4',
