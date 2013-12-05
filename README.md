@@ -7,9 +7,9 @@ index of diamond
 
 # Screenshot
 
-![Screenshot](https://raw.github.com/huoxy/graph-index/master/static/image/graph-index.png)
-![Screenshot](https://raw.github.com/huoxy/graph-index/master/static/image/graph-index-server.png)
-![Screenshot](https://raw.github.com/huoxy/graph-index/master/static/image/graph-index-plugin.png)
+![Screenshot](https://raw.github.com/douban/graph-index/master/static/image/graph-index.png)
+![Screenshot](https://raw.github.com/douban/graph-index/master/static/image/graph-index-server.png)
+![Screenshot](https://raw.github.com/douban/graph-index/master/static/image/graph-index-plugin.png)
 
 #Running
 
