@@ -14,7 +14,7 @@ index of diamond
 #Running
 
 ```shell
-git clone https://github.com/huoxy/graph-index.git
+git clone git@github.com:acmerfight/graph-index.git 
 cd graph-index
 ./graph-index.py
 ```
