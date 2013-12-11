@@ -13,20 +13,28 @@ index of diamond
 
 #Running
 
-before run it, you should edit config.py to modify `graphite_url`, in our case it is `http://graphite.intra.douban.com`
+First:
 
 ```shell
 git clone https://github.com/douban/graph-index.git
+cd graph-index
 ```
 
-and then as a dependency, you should add a cron to update metrics like this: `crontab -e`, put `*/5 * * * * python /path/to/update-metrics.py` in it
+edit the config.py to modify `graphite_url`, in our case it is `http://graphite.intra.douban.com`
+
+then:
+
+as a dependency, you should add a cron to update metrics like this: `crontab -e`, and put `*/5 * * * * python /path/to/update-metrics.py` in it
+
+
+finally:
 
 now everything is ready, we can run it by:
 
 ```
-cd graph-index
 ./graph-index.py
 ```
+
 # Grammar
 
 `regex` will draw a graph for each metric, for example: `servers.[^\.]+.loadavg.01$`
