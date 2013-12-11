@@ -31,3 +31,4 @@ cd graph-index
 `merge:regex` will merge matched metrics in a single graph, for example: `merge:.*loadavg\.01$`
 
 `group\s*by\s*\-?\d+` will draw multiple graphs group by the `\-?\d+`-th field, for example: `loadavg\.01$ groupby1`
+
