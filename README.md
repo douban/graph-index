@@ -1,5 +1,6 @@
 # Graph Index
-index of diamond
+
+If you are using [Graphite](https://github.com/graphite-project/graphite-web) & [Diamond](https://github.com/BrightcoveOS/Diamond), graph-index will help you to build a wonderful index view !
 
  * support regex search
  * some pre-defined dashboard
