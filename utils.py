@@ -61,9 +61,9 @@ def build_diamond(metrics):
             continue
         server = match.get('server')
         plugin = match.get('plugin')
-        if match.has_key('more'):
+        if 'more' in match:
             plugin = plugin + '.' + match.get('more')
-        if not diamond[server].has_key(plugin):
+        if plugin not in diamond[server]:
             diamond[server][plugin] = []
         diamond[server][plugin].append(metric)
     open(config.diamond_cache, 'wb').write(pickle.dumps(diamond))
@@ -91,6 +91,6 @@ def do_plugin(diamond, plugin, server_regex):
     re_obj = re.compile(server_regex)
     for s in diamond.keys():
         if re_obj.match(s):
-            if diamond[s].has_key(plugin):
+            if plugin in diamond[s]:
                 data[s] = diamond[s][plugin]
     return data
