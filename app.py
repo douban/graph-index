@@ -141,8 +141,11 @@ def regex():
 def debug():
     global diamond, metrics
     plugins = defaultdict(dict) # dict is faster than set
-    plugins_num = len(set(reduce(lambda x,y:x+y, [diamond[server].keys() \
-        for server in diamond.keys()])))
+    diamond_server_key = [diamond[server].keys() for server in diamond.keys()]
+    if diamond_server_key:
+        plugins_num = len(set(reduce(lambda x,y:x+y, diamond_server_key)))
+    else:
+        plugins_num = 0
     metrics_num = len(metrics)
     for metric in metrics:
         match_obj = diamond_re.match(metric)
@@ -161,5 +164,3 @@ def debug():
 @route('<path:re:/static/fonts/.*woff>', method = 'GET')
 def static(path):
     return static_file(path, root = '.')
-
-
