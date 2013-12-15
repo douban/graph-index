@@ -6,12 +6,12 @@ import json
 import pickle
 from urllib import urlencode
 from collections import defaultdict
-from bottle import route, template, static_file, request, redirect, default_app, hook
+from bottle import route, template, static_file, request, redirect, hook
 
 import config
 from models import Graph
 from examples import examples
-from utils import logging, build_metrics, build_diamond, groupby_re, diamond_re, do_plugin, do_groupby, search_metrics
+from utils import groupby_re, diamond_re, do_plugin, do_groupby, search_metrics
 
 metrics = diamond = None
 
@@ -74,8 +74,8 @@ def metric(metric_name = ''):
     body = template('templates/graph', **locals())
     return render_page(body)
 
-@route('/regex/', method = 'GET')
-@route('/regex/', method = 'POST')
+
+@route('/regex/', method = ['GET', 'POST'])
 def regex():
     global metrics, diamond
     errors = []
@@ -161,5 +161,3 @@ def debug():
 @route('<path:re:/static/fonts/.*woff>', method = 'GET')
 def static(path):
     return static_file(path, root = '.')
-
-
