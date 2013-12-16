@@ -8,7 +8,7 @@ class Graph:
         self.graph_args = dict( width = 600, height = 400, \
             _from = '-1d', hideLegend = 'False', )
         self.graph_args.update(kwargs)
-        if not self.graph_args.has_key('title'): # self.graph_args['title'] stores the real title
+        if 'title' not in self.graph_args: # self.graph_args['title'] stores the real title
             self.graph_args['title'] = ','.join(self.targets)
         self.title = self.graph_args['title'] # self.title origin title passed by kwargs
         self.base_url = config.graphite_url + '/render/?%s' % \
@@ -21,7 +21,7 @@ class Graph:
     def full_url(self, **kwargs):
         graph_args = self.graph_args.copy()
         graph_args.update(kwargs)
-        if graph_args.has_key('_from'):
+        if '_from' in graph_args:
             graph_args['from'] = graph_args['_from']
             del graph_args['_from']
         graph_args['height'] += len(self.targets) > 10 and len(self.targets) * 12 or 0
@@ -49,4 +49,3 @@ class Graph:
         assert(len(self.targets) == 1)
         return self.full_url() + '&target=alias(dashed(timeShift(%s,"%s")),"%s ago")' % \
             (self.targets[0], shift, shift)
-        
