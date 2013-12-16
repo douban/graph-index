@@ -36,6 +36,13 @@ now everything is ready, we can run it by:
 ./graph-index.py
 ```
 
+graph-index also supports multi-workers with tools like gunicorn, In my case, I started it like this:
+
+```
+cd graph-index
+/usr/bin/gunicorn -w 5 app:'default_app()' -b 0.0.0.0:8808
+```
+
 # Grammar
 
 `regex` will draw a graph for each metric, for example: `servers.[^\.]+.loadavg.01$`

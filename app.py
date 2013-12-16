@@ -6,7 +6,7 @@ import json
 import pickle
 from urllib import urlencode
 from collections import defaultdict
-from bottle import route, template, static_file, request, redirect, hook
+from bottle import route, template, static_file, request, redirect, hook, default_app
 
 import config
 from models import Graph
