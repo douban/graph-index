@@ -9,7 +9,6 @@ import urllib2
 import logging
 import itertools
 from collections import defaultdict
-from urllib import urlencode
 
 import config
 
@@ -26,7 +25,6 @@ diamond_re_more = re.compile('^servers\.(?P<server>[^\.]+)\.(?P<plugin>(network|
 groupby_re = re.compile('^(?P<search>[^ ]*)\s+group\s*by\s*(?P<index>\-?\d+)$')
 
 def is_bad_metric(metric):
-    global bad_metrics
     for r in bad_metrics:
         if r.match(metric):
             return True
@@ -45,12 +43,11 @@ def build_metrics():
         if newmetrics != oldmetrics:
             open(config.metrics_file, 'w').write(json.dumps(newmetrics))
         return newmetrics
-    except Exception, e:
+    except Exception as e:
         logging.warning(str(e))
         sys.exit(1)
 
 def build_diamond(metrics):
-    global diamon_re, diamond_re_more
     diamond = defaultdict(dict)
     for metric in metrics:
         matched = filter(lambda x: x is not None, \
