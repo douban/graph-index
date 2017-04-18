@@ -12,7 +12,7 @@ If you are using [Graphite](https://github.com/graphite-project/graphite-web) & 
 ![Screenshot](https://raw.github.com/douban/graph-index/master/static/image/graph-index-server.png)
 ![Screenshot](https://raw.github.com/douban/graph-index/master/static/image/graph-index-plugin.png)
 
-#Running
+# Running
 
 First:
 
